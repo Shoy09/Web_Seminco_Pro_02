@@ -8,6 +8,7 @@ import { EmpresaService } from '../../../services/empresa.service';
 import { EquipoService } from '../../../services/equipo.service';
 import { TipoPerforacionService } from '../../../services/tipo-perforacion.service';
 import { LoadingDialogComponent } from '../../Reutilizables/loading-dialog/loading-dialog.component';
+import { ToneladasService } from '../../../services/toneladas.service';
 
 
 @Component({
@@ -34,6 +35,7 @@ export class CrearDataComponent implements OnInit {
     private equipoService: EquipoService,
     private empresaService: EmpresaService,
     private FechasPlanMensualService: FechasPlanMensualService,
+    private toneladasService: ToneladasService,
     public dialog: MatDialog
   ) {} // Inyecta los servicios
 
@@ -54,26 +56,35 @@ export class CrearDataComponent implements OnInit {
 
   buttonc = [
     {
-      nombre: 'Tipo de Perforación',
-      icon: 'mas.svg',
-      tipo: 'Tipo de Perforación',
-      datos: [],
-      campos: [
-        { nombre: 'nombre', label: 'Tipo de Perforación', tipo: 'text' },
-        { 
-          nombre: 'proceso', 
-          label: 'Proceso', 
-          tipo: 'select', 
-          opciones: [
-            'PERFORACIÓN TALADROS LARGOS',
-            'PERFORACIÓN HORIZONTAL',
-            'SOSTENIMIENTO',
-            'SERVICIOS AUXILIARES',
-            'CARGUÍO'
-          ]
-        }
+  nombre: 'Tipo de Perforación',
+  icon: 'mas.svg',
+  tipo: 'Tipo de Perforación',
+  datos: [],
+  campos: [
+    { nombre: 'nombre', label: 'Tipo de Perforación', tipo: 'text' },
+    { 
+      nombre: 'proceso', 
+      label: 'Proceso', 
+      tipo: 'select', 
+      opciones: [
+        'PERFORACIÓN TALADROS LARGOS',
+        'PERFORACIÓN HORIZONTAL',
+        'SOSTENIMIENTO',
+        'SERVICIOS AUXILIARES',
+        'CARGUÍO'
       ]
-    }, 
+    },
+    { 
+      nombre: 'permitido_medicion', 
+      label: '¿Permitido para medición?', 
+      tipo: 'select', 
+      opciones: [
+        'SI',
+        'NO'
+      ]
+    },
+  ]
+},
     {
       nombre: 'Equipo',
       icon: 'mas.svg',
@@ -109,7 +120,30 @@ export class CrearDataComponent implements OnInit {
       campos: [
         { nombre: 'mes', label: 'Mes', tipo: 'text' },
       ]
-    }
+    },
+    {
+  nombre: 'Toneladas',
+  icon: 'mas.svg',
+  tipo: 'Toneladas',
+  datos: [],
+  campos: [
+    { nombre: 'fecha', label: 'Fecha', tipo: 'date' },
+    { 
+          nombre: 'turno', 
+          label: 'Turno', 
+          tipo: 'select', 
+          opciones: [
+            'Dia',
+            'Noche'
+          ]
+        },
+    { nombre: 'zona', label: 'Zona', tipo: 'text' },
+    { nombre: 'tipo', label: 'Tipo', tipo: 'text' },
+    { nombre: 'labor', label: 'Labor', tipo: 'text' },
+    { nombre: 'toneladas', label: 'Toneladas', tipo: 'number' }
+  ]
+},
+
     
   ];  
 
@@ -245,14 +279,17 @@ export class CrearDataComponent implements OnInit {
     this.modalContenido = button;
   
     if (button.tipo === 'Tipo de Perforación') {
-      this.tipoPerforacionService.getTiposPerforacion().subscribe({
-        next: (data) => {
-          this.modalContenido.datos = data; // Asigna los datos recibidos
-          
-        },
-        error: (err) => console.error('Error al cargar Tipo de Perforación:', err)
-      });
-    } else if (button.tipo === 'Equipo') {
+  this.tipoPerforacionService.getTiposPerforacion().subscribe({
+    next: (data) => {
+      // Mapear 1 -> 'SI' y 0 -> 'NO' antes de asignar
+      this.modalContenido.datos = data.map(item => ({
+        ...item,
+        permitido_medicion: item.permitido_medicion === 1 ? 'SI' : 'NO'
+      }));
+    },
+    error: (err) => console.error('Error al cargar Tipo de Perforación:', err)
+  });
+} else if (button.tipo === 'Equipo') {
       this.equipoService.getEquipos().subscribe({
         next: (data) => {
           this.modalContenido.datos = data; // Asigna los datos recibidos
@@ -276,22 +313,39 @@ export class CrearDataComponent implements OnInit {
         },
         error: (err) => console.error('Error al cargar:', err)
       });
-    }
+    }else if (button.tipo === 'Toneladas') {
+  this.toneladasService.getToneladas().subscribe({
+    next: (data) => {
+      this.modalContenido.datos = data;
+    },
+    error: (err) => console.error('Error al cargar Toneladas:', err)
+  });
+}
+
   }
 
   guardarDatos() {
     if (Object.values(this.nuevoDato).some(val => val !== '')) {
       const nuevoRegistro = { ...this.nuevoDato };
 
+
       if (this.modalContenido.tipo === 'Tipo de Perforación') {
-        this.tipoPerforacionService.createTipoPerforacion(nuevoRegistro).subscribe({
-          next: (data) => {
-            this.modalContenido.datos.push(data);
-            
-          },
-          error: (err) => console.error('Error al guardar explosivo:', err)
-        });
-      } else if (this.modalContenido.tipo === 'Equipo') {
+  if (nuevoRegistro.permitido_medicion === 'SI') {
+    nuevoRegistro.permitido_medicion = 1;
+  } else if (nuevoRegistro.permitido_medicion === 'NO') {
+    nuevoRegistro.permitido_medicion = 0;
+  }
+
+  this.tipoPerforacionService.createTipoPerforacion(nuevoRegistro).subscribe({
+    next: (data) => {
+      // Mapear el campo antes de insertar en la tabla
+      data.permitido_medicion = data.permitido_medicion === 1 ? 'SI' : 'NO';
+      this.modalContenido.datos.push(data);
+    },
+    error: (err) => console.error('Error al guardar Tipo de Perforación:', err)
+  });
+}
+ else if (this.modalContenido.tipo === 'Equipo') {
         this.equipoService.createEquipo(nuevoRegistro).subscribe({
           next: (data) => {
             this.modalContenido.datos.push(data);
@@ -316,6 +370,15 @@ export class CrearDataComponent implements OnInit {
           error: (err) => console.error('Error al guardar Empresa:', err)
         });
       }
+      else if (this.modalContenido.tipo === 'Toneladas') {
+  this.toneladasService.createTonelada(nuevoRegistro).subscribe({
+    next: (data) => {
+      this.modalContenido.datos.push(data);
+    },
+    error: (err) => console.error('Error al guardar Toneladas:', err)
+  });
+}
+
 
       this.nuevoDato = {};
     }
@@ -356,7 +419,15 @@ export class CrearDataComponent implements OnInit {
         },
         error: (err) => console.error('Error al eliminar accesorio:', err)
       });
-    }
+    }else if (this.modalContenido.tipo === 'Toneladas') {
+  this.toneladasService.deleteTonelada(item.id).subscribe({
+    next: () => {
+      this.modalContenido.datos = this.modalContenido.datos.filter((dato: any) => dato.id !== item.id);
+    },
+    error: (err) => console.error('Error al eliminar Tonelada:', err)
+  });
+}
+
   }
 
   descargar(item: any): void {}
