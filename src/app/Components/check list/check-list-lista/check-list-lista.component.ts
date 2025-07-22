@@ -1,34 +1,30 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { EstadoFormComponent } from '../estado-form/estado-form.component';
-import { EstadoFormEditarComponent } from '../estado-form-editar/estado-form-editar.component';
-import { OpcionesDialogComponent } from '../opciones-dialog/opciones-dialog.component';
-import * as XLSX from 'xlsx';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { CheckListItem } from '../../../models/checklist-item.model';
+import { CheckListItemService } from '../../../services/checklist-item.service';
 import { ReactiveFormsModule } from '@angular/forms';
-import { SeleccionProcesoEstatosDialogComponent } from '../seleccion-proceso-estatos-dialog/seleccion-proceso-estatos-dialog.component';
-import { Estado } from '../../../models/Estado';
-import { EstadoService } from '../../../services/estado.service';
 import { ConfirmDialogComponent } from '../../Reutilizables/confirm-dialog/confirm-dialog.component';
+import { SeleccionProcesoDialogComponent } from '../seleccion-proceso-dialog/seleccion-proceso-dialog.component';
 
 @Component({
-  selector: 'app-estados',
+  selector: 'app-check-list-lista',
   imports: [ReactiveFormsModule, MatTableModule, MatPaginatorModule],
-  templateUrl: './estados.component.html',
-  styleUrl: './estados.component.css'
+  templateUrl: './check-list-lista.component.html',
+  styleUrl: './check-list-lista.component.css'
 })
-export class EstadosComponent implements OnInit {
-  displayedColumns: string[] = ['estado_principal', 'codigo', 'tipo_estado', 'categoria', 'proceso', 'acciones'];
-  dataSource = new MatTableDataSource<Estado>();
+export class CheckListListaComponent implements OnInit {
+   displayedColumns: string[] = ['proceso', 'categoria', 'nombre', 'acciones'];
+  dataSource = new MatTableDataSource<CheckListItem>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private estadoService: EstadoService, public dialog: MatDialog) {}
+  constructor(private checkService: CheckListItemService, public dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.getEstados();
-    this.estadoService.getEstadoActualizado().subscribe(cambio => {
+    this.checkService.getItemsActualizados().subscribe(cambio => {
       if (cambio) {
         this.getEstados(); // Recargar la tabla cuando haya cambios
       }
@@ -37,8 +33,8 @@ export class EstadosComponent implements OnInit {
   
 
   getEstados(): void {
-    this.estadoService.getEstados().subscribe(
-      (data: Estado[]) => {
+    this.checkService.getCheckListItems().subscribe(
+      (data: CheckListItem[]) => {
         this.dataSource.data = data;
   
         // Importante: Forzar actualización del paginador
@@ -60,29 +56,29 @@ export class EstadosComponent implements OnInit {
   }
 
   
-  abrirDialogoEditar(estado: Estado) {
-    const dialogRef = this.dialog.open(EstadoFormEditarComponent, {
-      width: '700px',
-      data: estado, // Pasamos el estado seleccionado
-      autoFocus: false
-    });
+  abrirDialogoEditar(estado: CheckListItem) {
+    // const dialogRef = this.dialog.open(EstadoFormEditarComponent, {
+    //   width: '700px',
+    //   data: estado, // Pasamos el estado seleccionado
+    //   autoFocus: false
+    // });
   
-    dialogRef.afterClosed().subscribe((estadoEditado) => {
-      if (estadoEditado) {
-        this.getEstados(); // Volver a cargar los estados si hubo cambios
-      }
-    });
+    // dialogRef.afterClosed().subscribe((estadoEditado) => {
+    //   if (estadoEditado) {
+    //     this.getEstados(); // Volver a cargar los estados si hubo cambios
+    //   }
+    // });
   }
   
-  eliminarEstado(id: number): void {
+  eliminarItem(id: number): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '350px',
-      data: { mensaje: '¿Estás seguro de que deseas eliminar este estado?' }
+      data: { mensaje: '¿Estás seguro de que deseas eliminar?' }
     });
 
     dialogRef.afterClosed().subscribe((confirmado: boolean) => {
       if (confirmado) {
-        this.estadoService.deleteEstado(id).subscribe(
+        this.checkService.deleteCheckListItem(id).subscribe(
           () => {
             this.getEstados(); // Refrescar la lista después de eliminar
           },
@@ -95,7 +91,7 @@ export class EstadosComponent implements OnInit {
   }
 
   abrirSeleccionProcesoDialogo() {
-    const dialogRef = this.dialog.open(SeleccionProcesoEstatosDialogComponent, {
+    const dialogRef = this.dialog.open(SeleccionProcesoDialogComponent, {
       width: '400px'
     });
   

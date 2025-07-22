@@ -16,6 +16,7 @@ import { TaladroLargoGraficaComponent } from './Components/Dashboard/Largo/talad
 import { SostenimientoGraficosComponent } from './Components/Dashboard/Sostenimiento/sostenimiento-graficos/sostenimiento-graficos.component';
 import { MetasComponent } from './Components/Crear datos/Metas/metas/metas.component';
 import { ExplosivosGraficosComponent } from './Components/Dashboard/Explosivos/explosivos-graficos/explosivos-graficos.component';
+import { CheckListListaComponent } from './Components/check list/check-list-lista/check-list-lista.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -40,6 +41,7 @@ export const routes: Routes = [
       { path: 'sostenimiento', component: SostenimientoGraficosComponent },
       { path: 'metas', component: MetasComponent },
       { path: 'explosivos-graficos', component: ExplosivosGraficosComponent },
+      { path: 'checklist', component: CheckListListaComponent },
     ],
   },
 

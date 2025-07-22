@@ -1,0 +1,38 @@
+<div class="container">
+  <h2>Crear Nuevo Checklist</h2>
+
+  <form [formGroup]="checkListForm" (ngSubmit)="onSubmit()">
+
+    <!-- Proceso (solo lectura) -->
+    <div class="form-group">
+      <label for="proceso">Proceso</label>
+      <input id="proceso" formControlName="proceso" readonly />
+    </div>
+
+    <!-- Categoría -->
+<div class="form-group">
+  <label for="categoria">Categoría</label>
+  <select id="categoria" formControlName="categoria" required>
+    <option value="" disabled selected>Seleccionar categoría</option>
+    <option value="ANTES">Antes</option>
+    <option value="DURANTE">Durante</option>
+    <option value="DESPUES">Después</option>
+  </select>
+</div>
+
+
+    <!-- Nombre -->
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input id="nombre" formControlName="nombre" required />
+    </div>
+
+    <!-- Botones -->
+    <div class="button-container">
+      <button type="submit" [disabled]="checkListForm.invalid">Crear</button>
+      <button type="button" class="cancel-btn" (click)="onCancel()">Cancelar</button>
+    </div>
+  </form>
+
+  <p *ngIf="mensaje" class="mensaje">{{ mensaje }}</p>
+</div>

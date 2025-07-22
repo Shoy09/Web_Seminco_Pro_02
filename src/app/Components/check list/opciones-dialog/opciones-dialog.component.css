@@ -1,0 +1,31 @@
+.dialog-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .dialog-content {
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .dialog-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px; /* Separación entre botones */
+    padding: 15px;
+  }
+  
+  .rounded-button {
+    border-radius: 25px !important; /* Bordes redondeados */
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  mat-icon {
+    margin-right: 5px;
+  }
+  
