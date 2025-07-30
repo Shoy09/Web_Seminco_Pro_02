@@ -23,6 +23,9 @@ export class CrearDataComponent implements OnInit {
   nuevoDato: any = {}
   formularioActivo: string = 'botones';  
   years: number[] = []; 
+    editando: boolean = false;
+indiceEditando: number = -1;
+datoOriginal: any = null;
   meses: string[] = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
   datos = [
     { nombre: 'Reporte A', year: '2024', mes: 'Enero' },
@@ -165,7 +168,77 @@ export class CrearDataComponent implements OnInit {
       
     }
   }
+
+  procesarExcelGeneral(event: any) {
+  if (!this.modalContenido) {
+    return;
+  }
+
+  switch (this.modalContenido.tipo) {
+    case 'Equipo':
+      this.procesarExcelEquipo(event);
+      break;
+
+    case 'Toneladas':
+      this.procesarExcelToneladas(event);
+      break;
+
+    // 🔹 Agrega aquí otros tipos cuando implementes sus funciones
+    default:
+      break;
+  }
+}
+
+    editarDato(dato: any, index: number) {
+  this.editando = true;
+  this.indiceEditando = index;
+  this.datoOriginal = {...dato};
   
+  // Clonamos el dato para editarlo
+  this.nuevoDato = {...dato};
+}
+  
+  actualizarDatos() {
+  if (Object.values(this.nuevoDato).some(val => val !== '')) {
+    const datosActualizados = {...this.nuevoDato};
+    const id = this.modalContenido.datos[this.indiceEditando].id;
+
+    if (this.modalContenido.tipo === 'Tipo de Perforación') {
+      if (datosActualizados.permitido_medicion === 'SI') {
+        datosActualizados.permitido_medicion = 1;
+      } else if (datosActualizados.permitido_medicion === 'NO') {
+        datosActualizados.permitido_medicion = 0;
+      }
+
+      this.tipoPerforacionService.updateTipoPerforacion(id, datosActualizados).subscribe({
+        next: (data) => {
+          data.permitido_medicion = data.permitido_medicion === 1 ? 'SI' : 'NO';
+          this.modalContenido.datos[this.indiceEditando] = data;
+          this.cancelarEdicion();
+        },
+        error: (err) => console.error('Error al actualizar:', err)
+      });
+    }
+    else if (this.modalContenido.tipo === 'Equipo') {
+      this.equipoService.updateEquipo(id, datosActualizados).subscribe({
+        next: (data) => {
+          this.modalContenido.datos[this.indiceEditando] = data;
+          this.cancelarEdicion();
+        },
+        error: (err) => console.error('Error al actualizar:', err)
+      });
+    }
+  }
+}
+
+cancelarEdicion() {
+  this.editando = false;
+  this.indiceEditando = -1;
+  this.nuevoDato = {};
+  this.datoOriginal = null;
+}
+
+
   cargarExcel(nombre: string) {
     
   
@@ -232,6 +305,51 @@ export class CrearDataComponent implements OnInit {
   
     reader.readAsArrayBuffer(file);
   }
+
+    procesarExcelToneladas(event: any) {
+  const file = event.target.files[0];
+
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e: any) => {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+
+    const excelData: any[] = XLSX.utils.sheet_to_json(sheet, { raw: false });
+
+    const toneladas = excelData.map(row => ({
+      fecha: row["FECHA"] || null,
+      turno: row["TURNO"] || null,
+      zona: row["ZONA"] || null,
+      tipo: row["TIPO"] || null,
+      labor: row["LABOR"] || null,
+       toneladas: row["TONELADAS"] ? Number(row["TONELADAS"]) : 0
+    }));
+
+    this.cerrarModal();
+    const dialogRef = this.mostrarPantallaCarga();
+
+    // Procesar cada tonelada individualmente con el service
+    toneladas.forEach(nuevoRegistro => {
+      this.toneladasService.createTonelada(nuevoRegistro).subscribe({
+        next: (data) => {
+          this.modalContenido.datos.push(data);
+        },
+        error: (err) => console.error('Error al guardar Toneladas:', err)
+      });
+    });
+
+    this.dialog.closeAll();
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
   
   convertirFechaExcel(valor: any): string | null {
     if (!valor) return null;

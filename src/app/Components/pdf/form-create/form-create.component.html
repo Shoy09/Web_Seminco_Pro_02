@@ -1,0 +1,30 @@
+<form [formGroup]="createForm" (ngSubmit)="onSubmit()" class="form-container">
+  <h2 class="form-title">REGISTRO DE PDF</h2>
+
+  <div class="form-group">
+    <label for="proceso">PROCESO:</label>
+    <select id="proceso" formControlName="proceso" required>
+      <option *ngFor="let proceso of procesos" [value]="proceso">
+        {{ proceso }}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="mes">MES:</label>
+    <select id="mes" formControlName="mes" required>
+      <option *ngFor="let mes of meses" [value]="mes">
+        {{ mes }}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="pdf">SELECCIONA PDF:</label>
+    <input id="pdf" type="file" (change)="onFileSelected($event)" accept="application/pdf" required />
+  </div>
+
+  <div class="form-actions">
+    <button type="submit" [disabled]="!createForm.valid">GUARDAR</button>
+  </div>
+</form>

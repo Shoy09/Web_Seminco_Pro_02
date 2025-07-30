@@ -33,7 +33,8 @@ export class MenuComponent {
         { title: 'Plan de Producción', path: 'plan-produccion' },
         { title: 'Metas', path: 'metas' },
         { title: 'Checklist', path: 'checklist' },
-        
+        { title: 'Semanas', path: 'semana-personali' },
+        { title: 'PDF', path: 'pdf' },
       ],
     },
     {

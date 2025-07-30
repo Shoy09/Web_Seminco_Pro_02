@@ -23,73 +23,72 @@
   </div>
 
   <div class="modal-overlay" *ngIf="modalAbierto">
-    <div class="modal">
-      <button class="close-icon" (click)="cerrarModal()">✖</button>
-  
-      <!-- Nuevo contenedor para dar espacio interno -->
-      <div class="modal-content">
-        <div class="subtitu">
-          <h2>{{ modalContenido?.nombre }}</h2>
-          <p>Creación del tipo de {{ modalContenido?.nombre }}</p>
+  <div class="modal">
+    <button class="close-icon" (click)="cerrarModal()">✖</button>
+
+    <div class="modal-content">
+      <div class="subtitu">
+        <h2>{{ modalContenido?.nombre }}</h2>
+        <p>{{ editando ? 'Editando ' : 'Creación del tipo de ' }}{{ modalContenido?.nombre }}</p>
+      </div>
+
+      <form (submit)="editando ? actualizarDatos() : guardarDatos()">
+        <div class="form-group" *ngFor="let campo of modalContenido?.campos">
+          <label>{{ campo.label }}</label>
+          <div class="input-container">
+            <ng-container *ngIf="campo.tipo === 'select'; else inputField">
+              <select [(ngModel)]="nuevoDato[campo.nombre]" [name]="campo.nombre" required class="form-input">
+                <option *ngFor="let opcion of campo.opciones" [value]="opcion">{{ opcion }}</option>
+              </select>
+            </ng-container>
+            <ng-template #inputField>
+              <input [type]="campo.tipo" [(ngModel)]="nuevoDato[campo.nombre]" [name]="campo.nombre" required class="form-input">
+            </ng-template>
+          </div>
         </div>
-  
-        <!-- Formulario dentro del modal -->
-        <!-- Formulario dentro del modal -->
-<form (submit)="guardarDatos()">
-  <div class="form-group" *ngFor="let campo of modalContenido?.campos">
-    <label>{{ campo.label }}</label>
-    <div class="input-container">
-      <ng-container *ngIf="campo.tipo === 'select'; else inputField">
-        <select [(ngModel)]="nuevoDato[campo.nombre]" [name]="campo.nombre" required class="form-input">
-          <option *ngFor="let opcion of campo.opciones" [value]="opcion">{{ opcion }}</option>
-        </select>
-      </ng-container>
-      <ng-template #inputField>
-        <input [type]="campo.tipo" [(ngModel)]="nuevoDato[campo.nombre]" [name]="campo.nombre" required class="form-input">
-      </ng-template>
-    </div>
-  </div>
-  
 
-  <!-- Contenedor de botones -->
-  <div class="button-group">
-    <button type="submit" class="btn-submit">Guardar</button>
-
-    <!-- Botón para importar Excel -->
-<button type="button" class="btn-submit" (click)="triggerFileInput()">
-  Importar Excel <img src="excel.svg" class="side-image" />
-</button>
-
-<!-- Input de archivo oculto -->
-<input type="file" id="fileInput" style="display: none;" (change)="procesarExcelEquipo($event)" accept=".xlsx, .xls" />
-
-  </div>
-</form>
-
-        
-  
-        <!-- Tabla dentro del modal -->
-        <div class="tabla-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th *ngFor="let campo of modalContenido?.campos">{{ campo.label }}</th>
-                <th>Opciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let dato of modalContenido?.datos; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td *ngFor="let campo of modalContenido?.campos">{{ dato[campo.nombre] }}</td>
-                <td><img src="dele.svg" alt="Eliminar" class="action-icon" (click)="eliminar(dato)"></td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Contenedor de botones -->
+        <div class="button-group">
+          <ng-container *ngIf="!editando; else editButtons">
+            <button type="submit" class="btn-submit">Guardar</button>
+            <button type="button" class="btn-submit" (click)="triggerFileInput()">
+              Importar Excel <img src="archivo-excel.png" class="side-image" style="width: 20px; height: auto; margin-left: 5px;" />
+            </button>
+            <input type="file" id="fileInput" style="display: none;" (change)="procesarExcelGeneral($event)" accept=".xlsx, .xls" />
+          </ng-container>
+          
+          <ng-template #editButtons>
+            <button type="submit" class="btn-submit">Actualizar</button>
+            <button type="button" class="btn-submit" (click)="cancelarEdicion()">Cancelar</button>
+          </ng-template>
         </div>
+      </form>
+
+      <!-- Tabla dentro del modal -->
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th *ngFor="let campo of modalContenido?.campos">{{ campo.label }}</th>
+              <th>Opciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dato of modalContenido?.datos; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td *ngFor="let campo of modalContenido?.campos">{{ dato[campo.nombre] }}</td>
+              <td>
+                <img src="boton-editar.png" alt="Editar" class="action-icon" (click)="editarDato(dato, i)">
+                <img src="dele.svg" alt="Eliminar" class="action-icon" (click)="eliminar(dato)">
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>
+</div>
   
 
   <!-- Formulario de carga de documento -->

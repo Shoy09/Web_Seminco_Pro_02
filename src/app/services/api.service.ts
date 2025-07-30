@@ -35,4 +35,13 @@ export class ApiService {
   login(codigo_dni: string, password: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/auth/login`, { codigo_dni, password });
   }
+
+    postFormData(url: string, formData: FormData): Observable<any> {
+  return this.http.post(`${this.apiUrl}/${url}`, formData);
+}
+
+putFormData(url: string, formData: FormData): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${url}`, formData);
+}
+
 }

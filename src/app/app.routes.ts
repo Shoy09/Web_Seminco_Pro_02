@@ -17,6 +17,8 @@ import { SostenimientoGraficosComponent } from './Components/Dashboard/Sostenimi
 import { MetasComponent } from './Components/Crear datos/Metas/metas/metas.component';
 import { ExplosivosGraficosComponent } from './Components/Dashboard/Explosivos/explosivos-graficos/explosivos-graficos.component';
 import { CheckListListaComponent } from './Components/check list/check-list-lista/check-list-lista.component';
+import { ListPdfComponent } from './Components/pdf/list-pdf/list-pdf.component';
+import { SemanaListComponent } from './Components/prueba/semana-list/semana-list.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -42,6 +44,9 @@ export const routes: Routes = [
       { path: 'metas', component: MetasComponent },
       { path: 'explosivos-graficos', component: ExplosivosGraficosComponent },
       { path: 'checklist', component: CheckListListaComponent },
+      { path: 'semana-personali', component: SemanaListComponent },
+      { path: 'pdf', component: ListPdfComponent },
+    
     ],
   },
 
