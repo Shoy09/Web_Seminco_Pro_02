@@ -6,9 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  // private readonly apiUrl = 'https://backend-seminco-mina-02.onrender.com/api';
+  private readonly apiUrl = 'https://backend-seminco-mina-02.onrender.com/api';
   // private readonly apiUrl = 'https://backendseminco-production.up.railway.app/api';
-  private readonly apiUrl = 'http://localhost:3000/api'; 
+  // private readonly apiUrl = 'http://localhost:3000/api'; 
   constructor(private readonly http: HttpClient) {}
 
   // Obtener datos
