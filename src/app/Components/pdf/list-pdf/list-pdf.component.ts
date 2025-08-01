@@ -16,7 +16,7 @@ import { ConfirmDialogComponent } from '../../Reutilizables/confirm-dialog/confi
   styleUrl: './list-pdf.component.css'
 })
 export class ListPdfComponent implements OnInit {
-  displayedColumns: string[] = ['proceso', 'mes', 'url_pdf', 'acciones'];
+  displayedColumns: string[] = ['proceso', 'mes', 'tipo_labor', 'labor', 'ala', 'url_pdf', 'acciones'];
   dataSource = new MatTableDataSource<Pdf>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;

@@ -22,6 +22,25 @@
       <th mat-header-cell *matHeaderCellDef> Mes </th>
       <td mat-cell *matCellDef="let pdf"> {{ pdf.mes }} </td>
     </ng-container>
+
+    <!-- Tipo Labor -->
+     <ng-container matColumnDef="tipo_labor">
+      <th mat-header-cell *matHeaderCellDef> Tipo Labor </th>
+      <td mat-cell *matCellDef="let pdf"> {{ pdf.tipo_labor || '-' }} </td>
+    </ng-container>
+
+    <!-- Labor -->
+    <ng-container matColumnDef="labor">
+      <th mat-header-cell *matHeaderCellDef> Labor </th>
+      <td mat-cell *matCellDef="let pdf"> {{ pdf.labor || '-' }} </td>
+    </ng-container>
+
+    <!-- Ala -->
+    <ng-container matColumnDef="ala">
+      <th mat-header-cell *matHeaderCellDef> Ala </th>
+      <td mat-cell *matCellDef="let pdf"> {{ pdf.ala || '-' }} </td>
+    </ng-container>
+
     
     <!-- URL del PDF -->
     <ng-container matColumnDef="url_pdf">

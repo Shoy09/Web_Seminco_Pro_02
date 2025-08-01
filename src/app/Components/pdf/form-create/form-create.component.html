@@ -19,6 +19,34 @@
     </select>
   </div>
 
+  <!-- Nuevos campos -->
+  <div class="form-group">
+    <label for="tipo_labor">TIPO DE LABOR:</label>
+    <select id="tipo_labor" formControlName="tipo_labor" required>
+      <option *ngFor="let tipo of tiposLabor" [value]="tipo">
+        {{ tipo }}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="labor">LABOR:</label>
+    <select id="labor" formControlName="labor" required>
+      <option *ngFor="let labor of labores" [value]="labor">
+        {{ labor }}
+      </option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="ala">ALA:</label>
+    <select id="ala" formControlName="ala" required>
+      <option *ngFor="let ala of alas" [value]="ala">
+        {{ ala }}
+      </option>
+    </select>
+  </div>
+
   <div class="form-group">
     <label for="pdf">SELECCIONA PDF:</label>
     <input id="pdf" type="file" (change)="onFileSelected($event)" accept="application/pdf" required />
