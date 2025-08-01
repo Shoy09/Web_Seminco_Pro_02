@@ -270,20 +270,23 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
     });
   }
 
-  prepararDatosGraficoBarrasApilada(): void {
-    this.datosGraficobarrasapiladasLargo = this.datosOperaciones.flatMap(operacion => {
-      return operacion.perforaciones?.flatMap(perforacion => {
-        return perforacion.inter_perforaciones?.map(inter => ({
+prepararDatosGraficoBarrasApilada(): void {
+  this.datosGraficobarrasapiladasLargo = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.perforaciones_taladro_largo?.flatMap(perforacion =>
+        perforacion.inter_perforaciones?.map(inter => ({
           equipo: operacion.equipo,
           codigo: operacion.codigo,
           longitud_perforacion: inter.longitud_perforacion,
           tipo_labor: perforacion.tipo_labor,
           labor: perforacion.labor,
           ntaladro: inter.ntaladro,
-        })) || [];
-      }) || [];
-    });
-  }
+        })) || []
+      ) || []
+    ) || []
+  );
+}
+
 
   prepararDatosHorometros(): void {
     this.datosHorometros = this.datosOperaciones.flatMap(operacion => 
@@ -316,39 +319,40 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
     );
   }
 
-  prepararDatoRendimientoPerforacion(): void {
-    const agrupadoPorOperacion = new Map<string, {
-      codigo: string;
-      estados: {
-        estado: string;
-        codigoEstado: string;
-        hora_inicio: string;
-        hora_final: string;
-      }[];
-      perforaciones: { 
-        longitud_perforacion: number;
-        ntaladro: number;
-      }[];
-    }>();
-  
-    for (const operacion of this.datosOperaciones) {
-      const codigo = operacion.codigo;
-      if (!agrupadoPorOperacion.has(codigo)) {
-        agrupadoPorOperacion.set(codigo, {
-          codigo,
-          estados: (operacion.estados || []).map(estado => ({
-            estado: estado.estado,
-            codigoEstado: estado.codigo,
-            hora_inicio: estado.hora_inicio,
-            hora_final: estado.hora_final
-          })),
-          perforaciones: []
-        });
-      }
-  
-      const grupo = agrupadoPorOperacion.get(codigo)!;
-  
-      operacion.perforaciones?.forEach(perforacion => {
+prepararDatoRendimientoPerforacion(): void {
+  const agrupadoPorOperacion = new Map<string, {
+    codigo: string;
+    estados: {
+      estado: string;
+      codigoEstado: string;
+      hora_inicio: string;
+      hora_final: string;
+    }[];
+    perforaciones: {
+      longitud_perforacion: number;
+      ntaladro: number;
+    }[];
+  }>();
+
+  for (const operacion of this.datosOperaciones) {
+    const codigo = operacion.codigo;
+    if (!agrupadoPorOperacion.has(codigo)) {
+      agrupadoPorOperacion.set(codigo, {
+        codigo,
+        estados: (operacion.estados || []).map(estado => ({
+          estado: estado.estado,
+          codigoEstado: estado.codigo,
+          hora_inicio: estado.hora_inicio,
+          hora_final: estado.hora_final
+        })),
+        perforaciones: []
+      });
+    }
+
+    const grupo = agrupadoPorOperacion.get(codigo)!;
+
+    operacion.estados?.forEach(estado => {
+      estado.perforaciones_taladro_largo?.forEach(perforacion => {
         perforacion.inter_perforaciones?.forEach(inter => {
           grupo.perforaciones.push({
             longitud_perforacion: inter.longitud_perforacion,
@@ -356,13 +360,13 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
           });
         });
       });
-    }
-  
-    // Convertimos el mapa en array final
-    this.RendimientoPerforacion = Array.from(agrupadoPorOperacion.values());
-  
+    });
   }
-  
+
+  // Convertimos el mapa en array final
+  this.RendimientoPerforacion = Array.from(agrupadoPorOperacion.values());
+}
+
   exportarAExcelConHojasSeparadas(): void {
   if (!this.datosOperaciones || this.datosOperaciones.length === 0) {
     console.warn('No hay datos para exportar');
@@ -489,7 +493,7 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
   datosHoja.push([""]); // Espacio en blanco
 
   // 2. Sección de Horómetros
-  if (operacion.horometros && operacion.horometros.length > 0) {
+  if (operacion.horometros?.length) {
     datosHoja.push(['HORÓMETROS']);
     datosHoja.push(['Nombre', 'Inicial', 'Final', 'OP', 'INOP']);
     
@@ -502,11 +506,11 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
         horometro.EstaINOP
       ]);
     });
-    datosHoja.push([""]); // Espacio en blanco
+    datosHoja.push([""]);
   }
 
   // 3. Sección de Estados
-  if (operacion.estados && operacion.estados.length > 0) {
+  if (operacion.estados?.length) {
     datosHoja.push(['ESTADOS']);
     datosHoja.push(['Número', 'Estado', 'Código', 'Hora Inicio', 'Hora Final']);
     
@@ -519,14 +523,12 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
         estado.hora_final
       ]);
     });
-    datosHoja.push([""]); // Espacio en blanco
+    datosHoja.push([""]);
   }
 
-  // 4. Sección de Perforaciones Taladro Largo
-  if (operacion.perforaciones && operacion.perforaciones.length > 0) {
-    datosHoja.push(['PERFORACIONES TALADRO LARGO']);
-    
-    operacion.perforaciones.forEach((perf, i) => {
+  // 4. Sección de Perforaciones Taladro Largo (actualizado)
+  operacion.estados?.forEach(estado => {
+    estado.perforaciones_taladro_largo?.forEach((perf, i) => {
       datosHoja.push([`PERFORACIÓN TALADRO LARGO ${i + 1}`]);
       datosHoja.push(['Zona', perf.zona]);
       datosHoja.push(['Tipo Labor', perf.tipo_labor]);
@@ -534,8 +536,8 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
       datosHoja.push(['Veta', perf.veta]);
       datosHoja.push(['Nivel', perf.nivel]);
       datosHoja.push(['Tipo Perforación', perf.tipo_perforacion]);
-      
-      if (perf.inter_perforaciones && perf.inter_perforaciones.length > 0) {
+
+      if (perf.inter_perforaciones?.length) {
         datosHoja.push([""]);
         datosHoja.push(['DETALLES DE PERFORACIÓN TALADRO LARGO']);
         datosHoja.push([
@@ -544,7 +546,7 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
           'Longitud Perforación', 'Ángulo Perforación', 
           'N° Filas de hasta', 'Detalles Trabajo'
         ]);
-        
+
         perf.inter_perforaciones.forEach(inter => {
           datosHoja.push([
             inter.codigo_actividad,
@@ -560,16 +562,17 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
           ]);
         });
       }
-      datosHoja.push([""]); // Espacio en blanco entre perforaciones
+      datosHoja.push([""]);
     });
-  }
+  });
 
   return datosHoja;
 }
 
 
+
 //EXCEL GENERALL--------------------------------------------------------------------------
- prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
+prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
   const datosPlanos = [];
 
   for (const operacion of datosOperaciones) {
@@ -587,9 +590,9 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
     };
 
     // Procesar horómetros
-    if (operacion.horometros && operacion.horometros.length > 0) {
+    if (operacion.horometros?.length) {
       for (const horometro of operacion.horometros) {
-        const filaHorometro = {
+        datosPlanos.push({
           ...filaBase,
           'Tipo Dato': 'HORÓMETRO',
           'Nombre Horómetro': horometro.nombre,
@@ -597,15 +600,14 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
           'Final': horometro.final,
           'Esta OP': horometro.EstaOP,
           'Esta INOP': horometro.EstaINOP
-        };
-        datosPlanos.push(filaHorometro);
+        });
       }
     }
 
     // Procesar estados
-    if (operacion.estados && operacion.estados.length > 0) {
+    if (operacion.estados?.length) {
       for (const estado of operacion.estados) {
-        const filaEstado = {
+        datosPlanos.push({
           ...filaBase,
           'Tipo Dato': 'ESTADO',
           'Número Estado': estado.numero,
@@ -613,51 +615,53 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
           'Código Estado': estado.codigo,
           'Hora Inicio': estado.hora_inicio,
           'Hora Final': estado.hora_final
-        };
-        datosPlanos.push(filaEstado);
-      }
-    }
+        });
 
-    // Procesar perforaciones
-    if (operacion.perforaciones && operacion.perforaciones.length > 0) {
-      for (const perforacion of operacion.perforaciones) {
-        const filaPerforacionBase = {
-          ...filaBase,
-          'Tipo Dato': 'PERFORACIÓN',
-          'Zona': perforacion.zona,
-          'Tipo Labor': perforacion.tipo_labor,
-          'Labor': perforacion.labor,
-          'Veta': perforacion.veta,
-          'Nivel': perforacion.nivel,
-          'Tipo Perforación': perforacion.tipo_perforacion
-        };
-
-        // Si hay perforaciones intermedias, agregarlas
-        if (perforacion.inter_perforaciones && perforacion.inter_perforaciones.length > 0) {
-          for (const inter of perforacion.inter_perforaciones) {
-            const filaInter = {
-              ...filaPerforacionBase,
-              'Código Actividad': inter.codigo_actividad,
-              'Nivel Inter': inter.nivel,
-              'Tajo': inter.tajo,
-              'N° Broca': inter.nbroca,
-              'N° Taladro': inter.ntaladro,
-              'N° Barras': inter.nbarras,
-              'Longitud Perforación': inter.longitud_perforacion,
-              'Ángulo Perforación': inter.angulo_perforacion,
-              'N° Filas de Hasta': inter.nfilas_de_hasta,
-              'Detalles Trabajo Realizado': inter.detalles_trabajo_realizado
+        // Procesar perforaciones taladro largo dentro de este estado
+        if (estado.perforaciones_taladro_largo?.length) {
+          for (const perforacion of estado.perforaciones_taladro_largo) {
+            const filaPerforacionBase = {
+              ...filaBase,
+              'Tipo Dato': 'PERFORACIÓN',
+              'Zona': perforacion.zona,
+              'Tipo Labor': perforacion.tipo_labor,
+              'Labor': perforacion.labor,
+              'Veta': perforacion.veta,
+              'Nivel': perforacion.nivel,
+              'Tipo Perforación': perforacion.tipo_perforacion,
+              'Código Estado': estado.codigo // opcional: para agrupar por estado
             };
-            datosPlanos.push(filaInter);
+
+            if (perforacion.inter_perforaciones?.length) {
+              for (const inter of perforacion.inter_perforaciones) {
+                datosPlanos.push({
+                  ...filaPerforacionBase,
+                  'Código Actividad': inter.codigo_actividad,
+                  'Nivel Inter': inter.nivel,
+                  'Tajo': inter.tajo,
+                  'N° Broca': inter.nbroca,
+                  'N° Taladro': inter.ntaladro,
+                  'N° Barras': inter.nbarras,
+                  'Longitud Perforación': inter.longitud_perforacion,
+                  'Ángulo Perforación': inter.angulo_perforacion,
+                  'N° Filas de Hasta': inter.nfilas_de_hasta,
+                  'Detalles Trabajo Realizado': inter.detalles_trabajo_realizado
+                });
+              }
+            } else {
+              datosPlanos.push(filaPerforacionBase);
+            }
           }
-        } else {
-          datosPlanos.push(filaPerforacionBase);
         }
       }
     }
 
     // Si no hay datos relacionados, agregar solo la fila base
-    if (!operacion.horometros?.length && !operacion.estados?.length && !operacion.perforaciones?.length) {
+    if (
+      !operacion.horometros?.length &&
+      !operacion.estados?.some(e => e.perforaciones_taladro_largo?.length) &&
+      !operacion.estados?.length
+    ) {
       datosPlanos.push({
         ...filaBase,
         'Tipo Dato': 'OPERACIÓN'

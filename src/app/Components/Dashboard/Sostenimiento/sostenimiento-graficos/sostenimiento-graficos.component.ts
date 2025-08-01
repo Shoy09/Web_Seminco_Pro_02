@@ -278,20 +278,24 @@ private obtenerMesDeFecha(fecha: string): string {
     });
   }
 
+
   prepararDatosGraficoBarrasApilada(): void {
-    this.datosGraficobarrasapiladasLargo = this.datosOperaciones.flatMap(operacion => {
-      return operacion.sostenimientos?.flatMap(perforacion => {
-        return perforacion.inter_sostenimientos?.map(inter => ({
+  this.datosGraficobarrasapiladasLargo = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.sostenimientos?.flatMap(sostenimiento =>
+        sostenimiento.inter_sostenimientos?.map(inter => ({
           equipo: operacion.equipo,
           codigo: operacion.codigo,
           longitud_perforacion: inter.longitud_perforacion,
-          tipo_labor: perforacion.tipo_labor,
-          labor: perforacion.labor,
+          tipo_labor: sostenimiento.tipo_labor,
+          labor: sostenimiento.labor,
           ntaladro: inter.ntaladro,
-        })) || [];
-      }) || [];
-    });
-  }
+        })) || []
+      ) || []
+    ) || []
+  );
+}
+
 
   prepararDatosHorometros(): void {
     this.datosHorometros = this.datosOperaciones.flatMap(operacion => 
@@ -324,76 +328,82 @@ private obtenerMesDeFecha(fecha: string): string {
     );
   }
 
-  prepararDatosMalla(): void {
-    this.datosGraficoMallas = this.datosOperaciones.flatMap(operacion => {
-      return operacion.sostenimientos?.flatMap(perforacion => {
-        return perforacion.inter_sostenimientos?.map(inter => ({
+prepararDatosMalla(): void {
+  this.datosGraficoMallas = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.sostenimientos?.flatMap(sostenimiento =>
+        sostenimiento.inter_sostenimientos?.map(inter => ({
           codigo: operacion.codigo,
           malla_instalada: inter.malla_instalada,
-          tipo_labor: perforacion.tipo_labor,
-          labor: perforacion.labor,
-        })) || [];
-      }) || [];
-    });
-  }
+          tipo_labor: sostenimiento.tipo_labor,
+          labor: sostenimiento.labor,
+        })) || []
+      ) || []
+    ) || []
+  );
+}
 
-  prepararDatosNtaladro(): void {
-    this.datosGraficoNtaladros = this.datosOperaciones.flatMap(operacion => {
-      return operacion.sostenimientos?.flatMap(perforacion => {
-        return perforacion.inter_sostenimientos?.map(inter => ({
+prepararDatosNtaladro(): void {
+  this.datosGraficoNtaladros = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.sostenimientos?.flatMap(sostenimiento =>
+        sostenimiento.inter_sostenimientos?.map(inter => ({
           ntaladro: inter.ntaladro,
-        })) || [];
-      }) || [];
-    });
-  }
+        })) || []
+      ) || []
+    ) || []
+  );
+}
 
-  prepararDatoRendimientoPerforacion(): void {
-    const agrupadoPorOperacion = new Map<string, {
-      codigo: string;
-      estados: {
-        estado: string;
-        codigoEstado: string;
-        hora_inicio: string;
-        hora_final: string;
-      }[];
-      perforaciones: {
-        longitud_perforacion: number;
-        ntaladro: number;
-      }[];
-    }>();
-  
-    for (const operacion of this.datosOperaciones) {
-      const codigo = operacion.codigo;
-      if (!agrupadoPorOperacion.has(codigo)) {
-        agrupadoPorOperacion.set(codigo, {
-          codigo,
-          estados: (operacion.estados || []).map(estado => ({
-            estado: estado.estado,
-            codigoEstado: estado.codigo,
-            hora_inicio: estado.hora_inicio,
-            hora_final: estado.hora_final
-          })),
-          perforaciones: []
-        });
-      }
-  
-      const grupo = agrupadoPorOperacion.get(codigo)!;
-  
-      operacion.sostenimientos?.forEach(perforacion => {
-        perforacion.inter_sostenimientos?.forEach(inter => {
+
+prepararDatoRendimientoPerforacion(): void {
+  const agrupadoPorOperacion = new Map<string, {
+    codigo: string;
+    estados: {
+      estado: string;
+      codigoEstado: string;
+      hora_inicio: string;
+      hora_final: string;
+    }[];
+    perforaciones: {
+      longitud_perforacion: number;
+      ntaladro: number;
+    }[];
+  }>();
+
+  for (const operacion of this.datosOperaciones) {
+    const codigo = operacion.codigo;
+
+    if (!agrupadoPorOperacion.has(codigo)) {
+      agrupadoPorOperacion.set(codigo, {
+        codigo,
+        estados: (operacion.estados || []).map(estado => ({
+          estado: estado.estado,
+          codigoEstado: estado.codigo,
+          hora_inicio: estado.hora_inicio,
+          hora_final: estado.hora_final
+        })),
+        perforaciones: []
+      });
+    }
+
+    const grupo = agrupadoPorOperacion.get(codigo)!;
+
+    operacion.estados?.forEach(estado => {
+      estado.sostenimientos?.forEach(sostenimiento => {
+        sostenimiento.inter_sostenimientos?.forEach(inter => {
           grupo.perforaciones.push({
             longitud_perforacion: inter.longitud_perforacion,
             ntaladro: inter.ntaladro
           });
         });
       });
-    }
-  
-    // Convertimos el mapa en array final
-    this.RendimientoPerforacion = Array.from(agrupadoPorOperacion.values());
-  
+    });
   }
-  
+
+  this.RendimientoPerforacion = Array.from(agrupadoPorOperacion.values());
+}
+
   exportarAExcelConHojasSeparadas(): void {
   if (!this.datosOperaciones || this.datosOperaciones.length === 0) {
     console.warn('No hay datos para exportar');
@@ -519,28 +529,29 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
   datosHoja.push(['Envío', operacion.envio]);
   datosHoja.push([""]); // Espacio en blanco
 
-  // 2. Sección de Horómetros
-  if (operacion.horometros && operacion.horometros.length > 0) {
+  // 2. Horómetros
+  if (operacion.horometros?.length) {
     datosHoja.push(['HORÓMETROS']);
     datosHoja.push(['Nombre', 'Inicial', 'Final', 'OP', 'INOP']);
-    
-    operacion.horometros.forEach(horometro => {
+
+    operacion.horometros.forEach(h => {
       datosHoja.push([
-        horometro.nombre,
-        horometro.inicial,
-        horometro.final,
-        horometro.EstaOP,
-        horometro.EstaINOP
+        h.nombre,
+        h.inicial,
+        h.final,
+        h.EstaOP,
+        h.EstaINOP
       ]);
     });
-    datosHoja.push([""]); // Espacio en blanco
+
+    datosHoja.push([""]);
   }
 
-  // 3. Sección de Estados
-  if (operacion.estados && operacion.estados.length > 0) {
+  // 3. Estados
+  if (operacion.estados?.length) {
     datosHoja.push(['ESTADOS']);
     datosHoja.push(['Número', 'Estado', 'Código', 'Hora Inicio', 'Hora Final']);
-    
+
     operacion.estados.forEach(estado => {
       datosHoja.push([
         estado.numero,
@@ -550,46 +561,50 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
         estado.hora_final
       ]);
     });
-    datosHoja.push([""]); // Espacio en blanco
+
+    datosHoja.push([""]);
   }
 
-  // 4. Sección de Sostenimientos
-  if (operacion.sostenimientos && operacion.sostenimientos.length > 0) {
-    datosHoja.push(['SOSTENIMIENTOS']);
-    
-    operacion.sostenimientos.forEach((sost, i) => {
-      datosHoja.push([`SOSTENIMIENTO ${i + 1}`]);
-      datosHoja.push(['Zona', sost.zona]);
-      datosHoja.push(['Tipo Labor', sost.tipo_labor]);
-      datosHoja.push(['Labor', sost.labor]);
-      datosHoja.push(['Veta', sost.veta]);
-      datosHoja.push(['Nivel', sost.nivel]);
-      datosHoja.push(['Tipo Perforación', sost.tipo_perforacion]);
-      
-      if (sost.inter_sostenimientos && sost.inter_sostenimientos.length > 0) {
-        datosHoja.push([""]);
-        datosHoja.push(['DETALLES DE SOSTENIMIENTO']);
-        datosHoja.push([
-          'Código Actividad', 'Nivel', 'Labor', 'Sección Labor', 
-          'N° Broca', 'N° Taladro', 'Longitud Perforación', 'Malla Instalada'
-        ]);
-        
-        sost.inter_sostenimientos.forEach(inter => {
+  // 4. Sostenimientos (por estado)
+  operacion.estados?.forEach((estado, indexEstado) => {
+    if (estado.sostenimientos?.length) {
+      datosHoja.push([`SOSTENIMIENTOS DEL ESTADO ${indexEstado + 1} - ${estado.estado}`]);
+
+      estado.sostenimientos.forEach((sost, i) => {
+        datosHoja.push([`SOSTENIMIENTO ${i + 1}`]);
+        datosHoja.push(['Zona', sost.zona]);
+        datosHoja.push(['Tipo Labor', sost.tipo_labor]);
+        datosHoja.push(['Labor', sost.labor]);
+        datosHoja.push(['Veta', sost.veta]);
+        datosHoja.push(['Nivel', sost.nivel]);
+        datosHoja.push(['Tipo Perforación', sost.tipo_perforacion]);
+
+        if (sost.inter_sostenimientos?.length) {
+          datosHoja.push([""]);
+          datosHoja.push(['DETALLES DE SOSTENIMIENTO']);
           datosHoja.push([
-            inter.codigo_actividad,
-            inter.nivel,
-            inter.labor,
-            inter.seccion_de_labor,
-            inter.nbroca,
-            inter.ntaladro,
-            inter.longitud_perforacion,
-            inter.malla_instalada
+            'Código Actividad', 'Nivel', 'Labor', 'Sección Labor', 
+            'N° Broca', 'N° Taladro', 'Longitud Perforación', 'Malla Instalada'
           ]);
-        });
-      }
-      datosHoja.push([""]); // Espacio en blanco entre sostenimientos
-    });
-  }
+
+          sost.inter_sostenimientos.forEach(inter => {
+            datosHoja.push([
+              inter.codigo_actividad,
+              inter.nivel,
+              inter.labor,
+              inter.seccion_de_labor,
+              inter.nbroca,
+              inter.ntaladro,
+              inter.longitud_perforacion,
+              inter.malla_instalada
+            ]);
+          });
+        }
+
+        datosHoja.push([""]);
+      });
+    }
+  });
 
   return datosHoja;
 }
@@ -599,7 +614,6 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
   const datosPlanos = [];
 
   for (const operacion of datosOperaciones) {
-    // Datos base de la operación
     const filaBase = {
       'ID Operación': operacion.id,
       'Turno': operacion.turno,
@@ -612,56 +626,95 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
       'Envío': operacion.envio
     };
 
-    // Procesar horómetros
-    if (operacion.horometros && operacion.horometros.length > 0) {
-      for (const horometro of operacion.horometros) {
-        const filaHorometro = {
-          ...filaBase,
-          'Tipo Dato': 'HORÓMETRO',
-          'Nombre Horómetro': horometro.nombre,
-          'Inicial': horometro.inicial,
-          'Final': horometro.final,
-          'Esta OP': horometro.EstaOP,
-          'Esta INOP': horometro.EstaINOP
-        };
-        datosPlanos.push(filaHorometro);
-      }
+    // Horómetros
+    for (const horo of operacion.horometros ?? []) {
+      datosPlanos.push({
+        ...filaBase,
+        'Tipo Dato': 'HORÓMETRO',
+        'Nombre Horómetro': horo.nombre,
+        'Inicial': horo.inicial,
+        'Final': horo.final,
+        'Esta OP': horo.EstaOP,
+        'Esta INOP': horo.EstaINOP
+      });
     }
 
-    // Procesar estados
-    if (operacion.estados && operacion.estados.length > 0) {
-      for (const estado of operacion.estados) {
-        const filaEstado = {
+    // Checklists
+    for (const chk of operacion.checklists ?? []) {
+      datosPlanos.push({
+        ...filaBase,
+        'Tipo Dato': 'CHECKLIST',
+        'Descripción': chk.descripcion,
+        'Decisión': chk.decision,
+        'Observación': chk.observacion,
+        'Categoría': chk.categoria
+      });
+    }
+
+    // Estados y sus relaciones
+    for (const estado of operacion.estados ?? []) {
+      const filaEstado = {
+        ...filaBase,
+        'Tipo Dato': 'ESTADO',
+        'Número Estado': estado.numero,
+        'Estado': estado.estado,
+        'Código Estado': estado.codigo,
+        'Hora Inicio': estado.hora_inicio,
+        'Hora Final': estado.hora_final
+      };
+      datosPlanos.push(filaEstado);
+
+      // Sostenimientos
+      for (const sost of estado.sostenimientos ?? []) {
+        const baseSost = {
           ...filaBase,
-          'Tipo Dato': 'ESTADO',
+          'Tipo Dato': 'SOSTENIMIENTO',
           'Número Estado': estado.numero,
-          'Estado': estado.estado,
-          'Código Estado': estado.codigo,
-          'Hora Inicio': estado.hora_inicio,
-          'Hora Final': estado.hora_final
+          'Zona': sost.zona,
+          'Tipo Labor': sost.tipo_labor,
+          'Labor': sost.labor,
+          'Veta': sost.veta,
+          'Nivel': sost.nivel,
+          'Tipo Perforación': sost.tipo_perforacion
         };
-        datosPlanos.push(filaEstado);
+
+        if (sost.inter_sostenimientos?.length) {
+          for (const inter of sost.inter_sostenimientos) {
+            datosPlanos.push({
+              ...baseSost,
+              'Código Actividad': inter.codigo_actividad,
+              'Nivel Inter': inter.nivel,
+              'Labor Inter': inter.labor,
+              'Sección Labor': inter.seccion_de_labor,
+              'N° Broca': inter.nbroca,
+              'N° Taladro': inter.ntaladro,
+              'Longitud Perforación': inter.longitud_perforacion,
+              'Malla Instalada': inter.malla_instalada
+            });
+          }
+        } else {
+          datosPlanos.push(baseSost);
+        }
       }
-    }
 
-    // Procesar perforaciones (taladro largo)
-    if (operacion.perforaciones && operacion.perforaciones.length > 0) {
-      for (const perforacion of operacion.perforaciones) {
-        const filaPerforacionBase = {
+      // Perforación Taladro Largo
+      for (const perf of estado.perforaciones_taladro_largo ?? []) {
+        const basePerf = {
           ...filaBase,
-          'Tipo Dato': 'PERFORACIÓN',
-          'Zona': perforacion.zona,
-          'Tipo Labor': perforacion.tipo_labor,
-          'Labor': perforacion.labor,
-          'Veta': perforacion.veta,
-          'Nivel': perforacion.nivel,
-          'Tipo Perforación': perforacion.tipo_perforacion
+          'Tipo Dato': 'PERFORACIÓN TLD',
+          'Número Estado': estado.numero,
+          'Zona': perf.zona,
+          'Tipo Labor': perf.tipo_labor,
+          'Labor': perf.labor,
+          'Veta': perf.veta,
+          'Nivel': perf.nivel,
+          'Tipo Perforación': perf.tipo_perforacion
         };
 
-        if (perforacion.inter_perforaciones && perforacion.inter_perforaciones.length > 0) {
-          for (const inter of perforacion.inter_perforaciones) {
-            const filaInter = {
-              ...filaPerforacionBase,
+        if (perf.inter_perforaciones?.length) {
+          for (const inter of perf.inter_perforaciones) {
+            datosPlanos.push({
+              ...basePerf,
               'Código Actividad': inter.codigo_actividad,
               'Nivel Inter': inter.nivel,
               'Tajo': inter.tajo,
@@ -672,33 +725,31 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
               'Ángulo Perforación': inter.angulo_perforacion,
               'N° Filas de Hasta': inter.nfilas_de_hasta,
               'Detalles Trabajo Realizado': inter.detalles_trabajo_realizado
-            };
-            datosPlanos.push(filaInter);
+            });
           }
         } else {
-          datosPlanos.push(filaPerforacionBase);
+          datosPlanos.push(basePerf);
         }
       }
-    }
 
-    // Procesar perforaciones horizontales
-    if (operacion.perforaciones_horizontal && operacion.perforaciones_horizontal.length > 0) {
-      for (const perforacion of operacion.perforaciones_horizontal) {
-        const filaPerforacionHorizontalBase = {
+      // Perforación Horizontal
+      for (const perf of estado.perforaciones_horizontal ?? []) {
+        const basePerfH = {
           ...filaBase,
           'Tipo Dato': 'PERFORACIÓN HORIZONTAL',
-          'Zona': perforacion.zona,
-          'Tipo Labor': perforacion.tipo_labor,
-          'Labor': perforacion.labor,
-          'Veta': perforacion.veta,
-          'Nivel': perforacion.nivel,
-          'Tipo Perforación': perforacion.tipo_perforacion
+          'Número Estado': estado.numero,
+          'Zona': perf.zona,
+          'Tipo Labor': perf.tipo_labor,
+          'Labor': perf.labor,
+          'Veta': perf.veta,
+          'Nivel': perf.nivel,
+          'Tipo Perforación': perf.tipo_perforacion
         };
 
-        if (perforacion.inter_perforaciones_horizontal && perforacion.inter_perforaciones_horizontal.length > 0) {
-          for (const inter of perforacion.inter_perforaciones_horizontal) {
-            const filaInterHorizontal = {
-              ...filaPerforacionHorizontalBase,
+        if (perf.inter_perforaciones_horizontal?.length) {
+          for (const inter of perf.inter_perforaciones_horizontal) {
+            datosPlanos.push({
+              ...basePerfH,
               'Código Actividad': inter.codigo_actividad,
               'Nivel Inter': inter.nivel,
               'Labor Inter': inter.labor,
@@ -708,54 +759,21 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
               'N° Taladros Rimados': inter.ntaladros_rimados,
               'Longitud Perforación': inter.longitud_perforacion,
               'Detalles Trabajo Realizado': inter.detalles_trabajo_realizado
-            };
-            datosPlanos.push(filaInterHorizontal);
+            });
           }
         } else {
-          datosPlanos.push(filaPerforacionHorizontalBase);
+          datosPlanos.push(basePerfH);
         }
       }
     }
 
-    // Procesar sostenimientos
-    if (operacion.sostenimientos && operacion.sostenimientos.length > 0) {
-      for (const sostenimiento of operacion.sostenimientos) {
-        const filaSostenimientoBase = {
-          ...filaBase,
-          'Tipo Dato': 'SOSTENIMIENTO',
-          'Zona': sostenimiento.zona,
-          'Tipo Labor': sostenimiento.tipo_labor,
-          'Labor': sostenimiento.labor,
-          'Veta': sostenimiento.veta,
-          'Nivel': sostenimiento.nivel,
-          'Tipo Perforación': sostenimiento.tipo_perforacion
-        };
+    // Si no hay ningún dato relacionado
+    const tieneDatos =
+      operacion.horometros?.length ||
+      operacion.checklists?.length ||
+      operacion.estados?.length;
 
-        if (sostenimiento.inter_sostenimientos && sostenimiento.inter_sostenimientos.length > 0) {
-          for (const inter of sostenimiento.inter_sostenimientos) {
-            const filaInterSostenimiento = {
-              ...filaSostenimientoBase,
-              'Código Actividad': inter.codigo_actividad,
-              'Nivel Inter': inter.nivel,
-              'Labor Inter': inter.labor,
-              'Sección Labor': inter.seccion_de_labor,
-              'N° Broca': inter.nbroca,
-              'N° Taladro': inter.ntaladro,
-              'Longitud Perforación': inter.longitud_perforacion,
-              'Malla Instalada': inter.malla_instalada
-            };
-            datosPlanos.push(filaInterSostenimiento);
-          }
-        } else {
-          datosPlanos.push(filaSostenimientoBase);
-        }
-      }
-    }
-
-    // Si no hay datos relacionados, agregar solo la fila base
-    if (!operacion.horometros?.length && !operacion.estados?.length && 
-        !operacion.perforaciones?.length && !operacion.perforaciones_horizontal?.length &&
-        !operacion.sostenimientos?.length) {
+    if (!tieneDatos) {
       datosPlanos.push({
         ...filaBase,
         'Tipo Dato': 'OPERACIÓN'
@@ -765,6 +783,7 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
 
   return datosPlanos;
 }
+
 
 exportarAExcel(): void {
   // Preparar los datos

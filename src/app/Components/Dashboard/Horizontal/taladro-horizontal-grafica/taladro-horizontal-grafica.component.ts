@@ -295,9 +295,10 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
     });
   }
 
-  prepararDatosGraficoBarrasApilada(): void {
-    this.datosGraficobarrasapiladas = this.datosOperaciones.flatMap(operacion => {
-      return operacion.perforaciones_horizontal?.flatMap(perforacion => {
+prepararDatosGraficoBarrasApilada(): void {
+  this.datosGraficobarrasapiladas = this.datosOperaciones.flatMap(operacion => {
+    return operacion.estados?.flatMap(estado => {
+      return estado.perforaciones_horizontal?.flatMap(perforacion => {
         return perforacion.inter_perforaciones_horizontal?.map(inter => ({
           equipo: operacion.equipo,
           codigo: operacion.codigo,
@@ -308,69 +309,81 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
           ntaladros_rimados: inter.ntaladros_rimados,
         })) || [];
       }) || [];
-    });
-  }
+    }) || [];
+  });
+}
+
 
 prepararDatosGraficoBarrasAgrupada(): void {
   this.datosGraficobarrasagrupadas = this.datosOperaciones.flatMap(operacion => 
-    operacion.perforaciones_horizontal?.flatMap(perforacion => 
-      perforacion.inter_perforaciones_horizontal?.map(inter => ({
-        equipo: operacion.equipo,
-        codigo: operacion.codigo,
-        tipo_labor: perforacion.tipo_labor,
-        labor: perforacion.labor,
-        ntaladro: inter.ntaladro || 0,
-        ntaladros_rimados: inter.ntaladros_rimados || 0
-      })) || []
+    operacion.estados?.flatMap(estado => 
+      estado.perforaciones_horizontal?.flatMap(perforacion => 
+        perforacion.inter_perforaciones_horizontal?.map(inter => ({
+          equipo: operacion.equipo,
+          codigo: operacion.codigo,
+          tipo_labor: perforacion.tipo_labor,
+          labor: perforacion.labor,
+          ntaladro: inter.ntaladro || 0,
+          ntaladros_rimados: inter.ntaladros_rimados || 0
+        })) || []
+      ) || []
     ) || []
   );
 }
 
 prepararDatosParaPromediostaladrosSeccion(): void {
   this.paraPromedioTaladrosSeccion = this.datosOperaciones.flatMap(operacion => 
-    operacion.perforaciones_horizontal?.flatMap(perforacion => 
-      perforacion.inter_perforaciones_horizontal?.map(inter => ({
-        seccion_la_labor: inter.seccion_la_labor,
-        ntaladro: inter.ntaladro || 0,
-        ntaladros_rimados: inter.ntaladros_rimados || 0,
-      })) || []
+    operacion.estados?.flatMap(estado => 
+      estado.perforaciones_horizontal?.flatMap(perforacion => 
+        perforacion.inter_perforaciones_horizontal?.map(inter => ({
+          seccion_la_labor: inter.seccion_la_labor,
+          ntaladro: inter.ntaladro || 0,
+          ntaladros_rimados: inter.ntaladros_rimados || 0,
+        })) || []
+      ) || []
     ) || []
   );
-} 
+}
  
 prepararDatosParaPromnumtaladrotipolabor(): void {
   this.ParaPromediosPromnumtaladrotipolabor = this.datosOperaciones.flatMap(operacion => 
-    operacion.perforaciones_horizontal?.flatMap(perforacion => 
-      perforacion.inter_perforaciones_horizontal?.map(inter => ({
-        ntaladro: inter.ntaladro || 0,
-        ntaladros_rimados: inter.ntaladros_rimados || 0,
-        tipo_labor: perforacion.tipo_labor,
-        labor: perforacion.labor,
-      })) || []
+    operacion.estados?.flatMap(estado => 
+      estado.perforaciones_horizontal?.flatMap(perforacion => 
+        perforacion.inter_perforaciones_horizontal?.map(inter => ({
+          ntaladro: inter.ntaladro || 0,
+          ntaladros_rimados: inter.ntaladros_rimados || 0,
+          tipo_labor: perforacion.tipo_labor,
+          labor: perforacion.labor,
+        })) || []
+      ) || []
     ) || []
   );
 }
 
 prepararDatosParaPromediostaladrosmetrosperforadosSeccion(): void {
   this.ParaPromediostaladrosmetrosperforadosSeccion = this.datosOperaciones.flatMap(operacion => 
-    operacion.perforaciones_horizontal?.flatMap(perforacion => 
-      perforacion.inter_perforaciones_horizontal?.map(inter => ({
-        seccion_la_labor: inter.seccion_la_labor,
-        longitud_perforacion: inter.longitud_perforacion,
-        ntaladro: inter.ntaladro,
-        ntaladros_rimados: inter.ntaladros_rimados,
-      })) || []
+    operacion.estados?.flatMap(estado => 
+      estado.perforaciones_horizontal?.flatMap(perforacion => 
+        perforacion.inter_perforaciones_horizontal?.map(inter => ({
+          seccion_la_labor: inter.seccion_la_labor,
+          longitud_perforacion: inter.longitud_perforacion,
+          ntaladro: inter.ntaladro,
+          ntaladros_rimados: inter.ntaladros_rimados,
+        })) || []
+      ) || []
     ) || []
   );
 }
 
 prepararDatosParaPromediostaladrosSecciónnumtaladroSeccion(): void {
   this.ParaPromediostaladrosnumtaladroSeccion = this.datosOperaciones.flatMap(operacion => 
-    operacion.perforaciones_horizontal?.flatMap(perforacion => 
-      perforacion.inter_perforaciones_horizontal?.map(inter => ({
-        seccion_la_labor: inter.seccion_la_labor,
-        ntaladro: inter.ntaladro || 0,
-      })) || []
+    operacion.estados?.flatMap(estado => 
+      estado.perforaciones_horizontal?.flatMap(perforacion => 
+        perforacion.inter_perforaciones_horizontal?.map(inter => ({
+          seccion_la_labor: inter.seccion_la_labor,
+          ntaladro: inter.ntaladro || 0,
+        })) || []
+      ) || []
     ) || []
   );
 }
@@ -414,11 +427,11 @@ prepararDatoRendimientoPerforacion(): void {
       codigoEstado: string;
       hora_inicio: string;
       hora_final: string;
-    }[];
-    perforaciones: {
-      longitud_perforacion: number;
-      ntaladro: number;
-      ntaladros_rimados: number;
+      perforaciones: {
+        longitud_perforacion: number;
+        ntaladro: number;
+        ntaladros_rimados: number;
+      }[];
     }[];
   }>();
 
@@ -427,32 +440,43 @@ prepararDatoRendimientoPerforacion(): void {
     if (!agrupadoPorOperacion.has(codigo)) {
       agrupadoPorOperacion.set(codigo, {
         codigo,
-        estados: (operacion.estados || []).map(estado => ({
-          estado: estado.estado,
-          codigoEstado: estado.codigo,
-          hora_inicio: estado.hora_inicio,
-          hora_final: estado.hora_final
-        })),
-        perforaciones: []
+        estados: []
       });
     }
 
     const grupo = agrupadoPorOperacion.get(codigo)!;
 
-    operacion.perforaciones_horizontal?.forEach(perforacion => {
-      perforacion.inter_perforaciones_horizontal?.forEach(inter => {
-        grupo.perforaciones.push({
-          longitud_perforacion: inter.longitud_perforacion,
-          ntaladro: inter.ntaladro,
-          ntaladros_rimados: inter.ntaladros_rimados
+    // Procesar cada estado de la operación
+    operacion.estados?.forEach(estado => {
+      const estadoConPerforaciones = {
+        estado: estado.estado,
+        codigoEstado: estado.codigo,
+        hora_inicio: estado.hora_inicio,
+        hora_final: estado.hora_final,
+        perforaciones: [] as {
+          longitud_perforacion: number;
+          ntaladro: number;
+          ntaladros_rimados: number;
+        }[]
+      };
+
+      // Procesar perforaciones horizontales de este estado
+      estado.perforaciones_horizontal?.forEach(perforacion => {
+        perforacion.inter_perforaciones_horizontal?.forEach(inter => {
+          estadoConPerforaciones.perforaciones.push({
+            longitud_perforacion: inter.longitud_perforacion,
+            ntaladro: inter.ntaladro,
+            ntaladros_rimados: inter.ntaladros_rimados
+          });
         });
       });
+
+      grupo.estados.push(estadoConPerforaciones);
     });
   }
 
   // Convertimos el mapa en array final
   this.RendimientoPerforacion = Array.from(agrupadoPorOperacion.values());
-
 }
 
 exportarAExcelConHojasSeparadas(): void {
@@ -567,7 +591,7 @@ datosHoja.forEach((row, rowIndex) => {
 prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
   const datosHoja: any[][] = [];
 
-  // 1. Encabezado principal
+  // 1. Encabezado principal (sin cambios)
   datosHoja.push(['INFORMACIÓN PRINCIPAL DE LA OPERACIÓN']);
   datosHoja.push(['ID', operacion.id]);
   datosHoja.push(['Turno', operacion.turno]);
@@ -580,7 +604,7 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
   datosHoja.push(['Envío', operacion.envio]);
   datosHoja.push([""]); // Espacio en blanco
 
-  // 2. Sección de Horómetros
+  // 2. Sección de Horómetros (sin cambios)
   if (operacion.horometros && operacion.horometros.length > 0) {
     datosHoja.push(['HORÓMETROS']);
     datosHoja.push(['Nombre', 'Inicial', 'Final', 'OP', 'INOP']);
@@ -594,63 +618,65 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
         horometro.EstaINOP
       ]);
     });
-    datosHoja.push([""]); // Espacio en blanco
+    datosHoja.push([""]);
   }
 
-  // 3. Sección de Estados
+  // 3. Sección de Estados (actualizada para incluir perforaciones)
   if (operacion.estados && operacion.estados.length > 0) {
-    datosHoja.push(['ESTADOS']);
-    datosHoja.push(['Número', 'Estado', 'Código', 'Hora Inicio', 'Hora Final']);
+    datosHoja.push(['ESTADOS Y PERFORACIONES']);
     
-    operacion.estados.forEach(estado => {
-      datosHoja.push([
-        estado.numero,
-        estado.estado,
-        estado.codigo,
-        estado.hora_inicio,
-        estado.hora_final
-      ]);
-    });
-    datosHoja.push([""]); // Espacio en blanco
-  }
-
-  // 4. Sección de Perforaciones Horizontales
-  if (operacion.perforaciones_horizontal && operacion.perforaciones_horizontal.length > 0) {
-    datosHoja.push(['PERFORACIONES HORIZONTALES']);
-    
-    operacion.perforaciones_horizontal.forEach((perf, i) => {
-      datosHoja.push([`PERFORACIÓN HORIZONTAL ${i + 1}`]);
-      datosHoja.push(['Zona', perf.zona]);
-      datosHoja.push(['Tipo Labor', perf.tipo_labor]);
-      datosHoja.push(['Labor', perf.labor]);
-      datosHoja.push(['Veta', perf.veta]);
-      datosHoja.push(['Nivel', perf.nivel]);
-      datosHoja.push(['Tipo Perforación', perf.tipo_perforacion]);
+    operacion.estados.forEach((estado, estadoIndex) => {
+      // Información del estado
+      datosHoja.push([`ESTADO ${estadoIndex + 1}`]);
+      datosHoja.push(['Número', estado.numero]);
+      datosHoja.push(['Estado', estado.estado]);
+      datosHoja.push(['Código', estado.codigo]);
+      datosHoja.push(['Hora Inicio', estado.hora_inicio]);
+      datosHoja.push(['Hora Final', estado.hora_final]);
       
-      if (perf.inter_perforaciones_horizontal && perf.inter_perforaciones_horizontal.length > 0) {
+      // Sección de Perforaciones Horizontales para este estado
+      if (estado.perforaciones_horizontal && estado.perforaciones_horizontal.length > 0) {
         datosHoja.push([""]);
-        datosHoja.push(['DETALLES DE PERFORACIÓN']);
-        datosHoja.push([
-          'Código Actividad', 'Nivel', 'Labor', 'Sección', 
-          'N° Broca', 'N° Taladro', 'Taladros Rimados', 
-          'Longitud Perforación', 'Detalles Trabajo'
-        ]);
+        datosHoja.push(['PERFORACIONES HORIZONTALES PARA ESTE ESTADO']);
         
-        perf.inter_perforaciones_horizontal.forEach(inter => {
-          datosHoja.push([
-            inter.codigo_actividad,
-            inter.nivel,
-            inter.labor,
-            inter.seccion_la_labor,
-            inter.nbroca,
-            inter.ntaladro,
-            inter.ntaladros_rimados,
-            inter.longitud_perforacion,
-            inter.detalles_trabajo_realizado
-          ]);
+        estado.perforaciones_horizontal.forEach((perf, perfIndex) => {
+          datosHoja.push([`PERFORACIÓN ${perfIndex + 1}`]);
+          datosHoja.push(['Zona', perf.zona]);
+          datosHoja.push(['Tipo Labor', perf.tipo_labor]);
+          datosHoja.push(['Labor', perf.labor]);
+          datosHoja.push(['Veta', perf.veta]);
+          datosHoja.push(['Nivel', perf.nivel]);
+          datosHoja.push(['Tipo Perforación', perf.tipo_perforacion]);
+          
+          if (perf.inter_perforaciones_horizontal && perf.inter_perforaciones_horizontal.length > 0) {
+            datosHoja.push([""]);
+            datosHoja.push(['DETALLES DE PERFORACIÓN']);
+            datosHoja.push([
+              'Código Actividad', 'Nivel', 'Labor', 'Sección', 
+              'N° Broca', 'N° Taladro', 'Taladros Rimados', 
+              'Longitud Perforación', 'Detalles Trabajo'
+            ]);
+            
+            perf.inter_perforaciones_horizontal.forEach(inter => {
+              datosHoja.push([
+                inter.codigo_actividad,
+                inter.nivel,
+                inter.labor,
+                inter.seccion_la_labor,
+                inter.nbroca,
+                inter.ntaladro,
+                inter.ntaladros_rimados,
+                inter.longitud_perforacion,
+                inter.detalles_trabajo_realizado
+              ]);
+            });
+          }
+          datosHoja.push([""]); // Espacio entre perforaciones
         });
+      } else {
+        datosHoja.push(['Este estado no tiene perforaciones asociadas']);
+        datosHoja.push([""]);
       }
-      datosHoja.push([""]); // Espacio en blanco entre perforaciones
     });
   }
 
@@ -676,7 +702,7 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
       'Envío': operacion.envio
     };
 
-    // Procesar horómetros
+    // Procesar horómetros (sin cambios)
     if (operacion.horometros && operacion.horometros.length > 0) {
       for (const horometro of operacion.horometros) {
         const filaHorometro = {
@@ -692,9 +718,10 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
       }
     }
 
-    // Procesar estados
+    // Procesar estados y sus perforaciones asociadas
     if (operacion.estados && operacion.estados.length > 0) {
       for (const estado of operacion.estados) {
+        // Fila para el estado
         const filaEstado = {
           ...filaBase,
           'Tipo Dato': 'ESTADO',
@@ -702,90 +729,91 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
           'Estado': estado.estado,
           'Código Estado': estado.codigo,
           'Hora Inicio': estado.hora_inicio,
-          'Hora Final': estado.hora_final
+          'Hora Final': estado.hora_final,
+          'Estado ID': estado.id  // Agregado para referencia
         };
         datosPlanos.push(filaEstado);
-      }
-    }
 
-    // Procesar perforaciones (taladro largo)
-    if (operacion.perforaciones && operacion.perforaciones.length > 0) {
-      for (const perforacion of operacion.perforaciones) {
-        const filaPerforacionBase = {
-          ...filaBase,
-          'Tipo Dato': 'PERFORACIÓN',
-          'Zona': perforacion.zona,
-          'Tipo Labor': perforacion.tipo_labor,
-          'Labor': perforacion.labor,
-          'Veta': perforacion.veta,
-          'Nivel': perforacion.nivel,
-          'Tipo Perforación': perforacion.tipo_perforacion
-        };
-
-        // Si hay perforaciones intermedias, agregarlas
-        if (perforacion.inter_perforaciones && perforacion.inter_perforaciones.length > 0) {
-          for (const inter of perforacion.inter_perforaciones) {
-            const filaInter = {
-              ...filaPerforacionBase,
-              'Código Actividad': inter.codigo_actividad,
-              'Nivel Inter': inter.nivel,
-              'Tajo': inter.tajo,
-              'N° Broca': inter.nbroca,
-              'N° Taladro': inter.ntaladro,
-              'N° Barras': inter.nbarras,
-              'Longitud Perforación': inter.longitud_perforacion,
-              'Ángulo Perforación': inter.angulo_perforacion,
-              'N° Filas de Hasta': inter.nfilas_de_hasta,
-              'Detalles Trabajo Realizado': inter.detalles_trabajo_realizado
+        // Procesar perforaciones horizontales asociadas a este estado
+        if (estado.perforaciones_horizontal && estado.perforaciones_horizontal.length > 0) {
+          for (const perforacion of estado.perforaciones_horizontal) {
+            const filaPerforacionHorizontalBase = {
+              ...filaBase,
+              'Tipo Dato': 'PERFORACIÓN HORIZONTAL',
+              'Estado ID': estado.id,  // Referencia al estado padre
+              'Zona': perforacion.zona,
+              'Tipo Labor': perforacion.tipo_labor,
+              'Labor': perforacion.labor,
+              'Veta': perforacion.veta,
+              'Nivel': perforacion.nivel,
+              'Tipo Perforación': perforacion.tipo_perforacion
             };
-            datosPlanos.push(filaInter);
+
+            // Procesar inter-perforaciones horizontales
+            if (perforacion.inter_perforaciones_horizontal && perforacion.inter_perforaciones_horizontal.length > 0) {
+              for (const inter of perforacion.inter_perforaciones_horizontal) {
+                const filaInterHorizontal = {
+                  ...filaPerforacionHorizontalBase,
+                  'Código Actividad': inter.codigo_actividad,
+                  'Nivel Inter': inter.nivel,
+                  'Labor Inter': inter.labor,
+                  'Sección Labor': inter.seccion_la_labor,
+                  'N° Broca': inter.nbroca,
+                  'N° Taladro': inter.ntaladro,
+                  'N° Taladros Rimados': inter.ntaladros_rimados,
+                  'Longitud Perforación': inter.longitud_perforacion,
+                  'Detalles Trabajo Realizado': inter.detalles_trabajo_realizado
+                };
+                datosPlanos.push(filaInterHorizontal);
+              }
+            } else {
+              datosPlanos.push(filaPerforacionHorizontalBase);
+            }
           }
-        } else {
-          datosPlanos.push(filaPerforacionBase);
         }
-      }
-    }
 
-    // Procesar perforaciones horizontales
-    if (operacion.perforaciones_horizontal && operacion.perforaciones_horizontal.length > 0) {
-      for (const perforacion of operacion.perforaciones_horizontal) {
-        const filaPerforacionHorizontalBase = {
-          ...filaBase,
-          'Tipo Dato': 'PERFORACIÓN HORIZONTAL',
-          'Zona': perforacion.zona,
-          'Tipo Labor': perforacion.tipo_labor,
-          'Labor': perforacion.labor,
-          'Veta': perforacion.veta,
-          'Nivel': perforacion.nivel,
-          'Tipo Perforación': perforacion.tipo_perforacion
-        };
-
-        // Si hay perforaciones intermedias horizontales, agregarlas
-        if (perforacion.inter_perforaciones_horizontal && perforacion.inter_perforaciones_horizontal.length > 0) {
-          for (const inter of perforacion.inter_perforaciones_horizontal) {
-            const filaInterHorizontal = {
-              ...filaPerforacionHorizontalBase,
-              'Código Actividad': inter.codigo_actividad,
-              'Nivel Inter': inter.nivel,
-              'Labor Inter': inter.labor,
-              'Sección Labor': inter.seccion_la_labor,
-              'N° Broca': inter.nbroca,
-              'N° Taladro': inter.ntaladro,
-              'N° Taladros Rimados': inter.ntaladros_rimados,
-              'Longitud Perforación': inter.longitud_perforacion,
-              'Detalles Trabajo Realizado': inter.detalles_trabajo_realizado
+        // Procesar perforaciones de taladro largo asociadas a este estado (si existen)
+        if (estado.perforaciones_taladro_largo && estado.perforaciones_taladro_largo.length > 0) {
+          for (const perforacion of estado.perforaciones_taladro_largo) {
+            const filaPerforacionBase = {
+              ...filaBase,
+              'Tipo Dato': 'PERFORACIÓN TALADRO LARGO',
+              'Estado ID': estado.id,
+              'Zona': perforacion.zona,
+              'Tipo Labor': perforacion.tipo_labor,
+              'Labor': perforacion.labor,
+              'Veta': perforacion.veta,
+              'Nivel': perforacion.nivel,
+              'Tipo Perforación': perforacion.tipo_perforacion
             };
-            datosPlanos.push(filaInterHorizontal);
+
+            if (perforacion.inter_perforaciones && perforacion.inter_perforaciones.length > 0) {
+              for (const inter of perforacion.inter_perforaciones) {
+                const filaInter = {
+                  ...filaPerforacionBase,
+                  'Código Actividad': inter.codigo_actividad,
+                  'Nivel Inter': inter.nivel,
+                  'Tajo': inter.tajo,
+                  'N° Broca': inter.nbroca,
+                  'N° Taladro': inter.ntaladro,
+                  'N° Barras': inter.nbarras,
+                  'Longitud Perforación': inter.longitud_perforacion,
+                  'Ángulo Perforación': inter.angulo_perforacion,
+                  'N° Filas de Hasta': inter.nfilas_de_hasta,
+                  'Detalles Trabajo Realizado': inter.detalles_trabajo_realizado
+                };
+                datosPlanos.push(filaInter);
+              }
+            } else {
+              datosPlanos.push(filaPerforacionBase);
+            }
           }
-        } else {
-          datosPlanos.push(filaPerforacionHorizontalBase);
         }
       }
     }
 
     // Si no hay datos relacionados, agregar solo la fila base
-    if (!operacion.horometros?.length && !operacion.estados?.length && 
-        !operacion.perforaciones?.length && !operacion.perforaciones_horizontal?.length) {
+    if (!operacion.horometros?.length && !operacion.estados?.length) {
       datosPlanos.push({
         ...filaBase,
         'Tipo Dato': 'OPERACIÓN'
