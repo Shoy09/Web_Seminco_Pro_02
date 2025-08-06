@@ -23,6 +23,7 @@ import { RendimientoPromedioComponent } from "../Graficos/rendimiento-promedio/r
 import { PromedioMayasComponent } from "../Graficos/promedio-mayas/promedio-mayas.component";
 import { PromedioNTaladroComponent } from "../Graficos/promedio-n-taladro/promedio-n-taladro.component";
 import * as XLSX from 'xlsx-js-style';
+import { ExcelSostenimientoExportService } from '../../../../services/export/ExcelSostenimientoExportService.service';
 
 @Component({
   selector: 'app-sostenimiento-graficos',
@@ -67,7 +68,7 @@ private todasLasMetas: Meta[] = [];
   };
 
 
-  constructor(private metaService: MetaSostenimientoService, private operacionService: OperacionService) {}
+  constructor(private metaService: MetaSostenimientoService, private operacionService: OperacionService, private excelSostenimientoExportService: ExcelSostenimientoExportService) {}
  
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -933,6 +934,14 @@ exportarAExcel(): void {
   // Exportar el archivo
   const fechaHoy = new Date().toISOString().split('T')[0];
   XLSX.writeFile(wb, `Operaciones_Sostenimiento_${fechaHoy}.xlsx`, { compression: true });
+}
+
+// En tu componente
+exportToExcelSostenimiento() {
+  this.excelSostenimientoExportService.exportOperacionesToExcel(
+    this.datosOperacionesExport, 
+    'Reporte_Operaciones'
+  );
 }
 
 }

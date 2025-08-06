@@ -26,6 +26,8 @@ import { Meta } from '../../../../models/meta.model';
 import { SumaMetrosPerforadosComponent } from "../Graficos/suma-metros-perforados/suma-metros-perforados.component";
 import { RendimientoPromedioComponent } from "../Graficos/rendimiento-promedio/rendimiento-promedio.component";
 import * as XLSX from 'xlsx-js-style';
+import { ExcelHorizontalExportService } from '../../../../services/export/ExcelHorizontalExportService.service';
+
 @Component({
   selector: 'app-taladro-horizontal-grafica',
   standalone: true,
@@ -77,7 +79,7 @@ turnoSeleccionado: string = '';
 turnos: string[] = ['DÍA', 'NOCHE'];
 
 
-  constructor(private metaService: MetaService, private operacionService: OperacionService) {}
+  constructor(private metaService: MetaService, private operacionService: OperacionService,private excelHorizontalExportService: ExcelHorizontalExportService) {}
 
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -969,6 +971,13 @@ exportarAExcel(): void {
   // Exportar el archivo
   const fechaHoy = new Date().toISOString().split('T')[0];
   XLSX.writeFile(wb, `Operaciones_taladro_horizontal_${fechaHoy}.xlsx`, { compression: true });
+}
+
+exportToExcelHorizontal() {
+  this.excelHorizontalExportService.exportOperacionesToExcel(
+    this.datosOperacionesExport, 
+    'Reporte_Operaciones'
+  );
 }
 
 }
