@@ -154,40 +154,52 @@ export class LongitudDePerforacionComponent implements OnChanges {
   }
 
   // 3. Actualizar processData() para incluir metas
-  private processData(data: any[]): { series: any[], categories: string[] } {
-    const laboresMap = new Map<string, { real: number, meta: number }>();
+private processData(data: any[]): { series: any[], categories: string[] } {
+    const laboresMap = new Map<string, { 
+        sumaReal: number, 
+        contador: number, 
+        meta: number 
+    }>();
 
     data.forEach(item => {
-      const clave = `${item.tipo_labor}-${item.labor}`;
-      const longitud = Number(item.longitud_perforacion) || 0;
+        const clave = `${item.tipo_labor}-${item.labor}`;
+        const longitud = Number(item.longitud_perforacion) || 0;
 
-      const valorActual = laboresMap.get(clave) || { real: 0, meta: 0 };
-      valorActual.real += longitud;
+        const valorActual = laboresMap.get(clave) || { 
+            sumaReal: 0, 
+            contador: 0, 
+            meta: 0 
+        };
+        
+        valorActual.sumaReal += longitud;
+        valorActual.contador++;
 
-      // Buscar la meta correspondiente (usando el formato tipo_labor-labor)
-      const metaLabor = this.metas.find(m => m.nombre === clave);
-      valorActual.meta = metaLabor ? metaLabor.objetivo : 0;
+        // Buscar la meta correspondiente
+        const metaLabor = this.metas.find(m => m.nombre === clave);
+        valorActual.meta = metaLabor ? metaLabor.objetivo : 0;
 
-      laboresMap.set(clave, valorActual);
+        laboresMap.set(clave, valorActual);
     });
 
     const laboresOrdenadas = Array.from(laboresMap.entries())
-      .sort((a, b) => a[0].localeCompare(b[0]));
+        .sort((a, b) => a[0].localeCompare(b[0]));
 
     return {
-      series: [
-        {
-          name: "Real",
-          type: "bar",
-          data: laboresOrdenadas.map(([_, valores]) => valores.real)
-        },
-        {
-          name: "Meta",
-          type: "line",
-          data: laboresOrdenadas.map(([_, valores]) => valores.meta)
-        }
-      ],
-      categories: laboresOrdenadas.map(([clave, _]) => clave)
+        series: [
+            {
+                name: "Promedio Real",
+                type: "bar",
+                data: laboresOrdenadas.map(([_, valores]) => 
+                    valores.contador > 0 ? valores.sumaReal / valores.contador : 0
+                )
+            },
+            {
+                name: "Meta",
+                type: "line",
+                data: laboresOrdenadas.map(([_, valores]) => valores.meta)
+            }
+        ],
+        categories: laboresOrdenadas.map(([clave, _]) => clave)
     };
-  }
+}
 }
