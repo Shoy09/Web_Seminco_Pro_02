@@ -21,7 +21,8 @@ import { MetaLargoService } from '../../../../services/meta-largo.service';
 import { SumaMetrosPerforadosComponent } from "../Graficos/suma-metros-perforados/suma-metros-perforados.component";
 import { RendimientoPromedioComponent } from "../Graficos/rendimiento-promedio/rendimiento-promedio.component";
 import * as XLSX from 'xlsx-js-style';
-import { ExcelExportService } from '../../../../services/export/ExcelExportService.service';
+import { ExcelExportService } from '../../../../services/export/general/ExcelExportService.service';
+import { ExcelExportServiceLargoFiltro } from '../../../../services/export/filtro/ExcelExportService.service';
 
  
 @Component({
@@ -63,7 +64,7 @@ private todasLasMetas: Meta[] = [];
   };
 
  
-  constructor(private metaService: MetaLargoService, private operacionService: OperacionService, private excelExportService: ExcelExportService) {}
+  constructor(private metaService: MetaLargoService, private operacionService: OperacionService, private excelExportService: ExcelExportService, private excelExportServiceFiltro: ExcelExportServiceLargoFiltro) {}
  
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -815,6 +816,13 @@ exportarAExcel(): void {
 exportToExcel() {
   this.excelExportService.exportOperacionesToExcel(
     this.datosOperacionesExport, 
+    'Reporte_Operaciones_Largo'
+  );
+}
+
+exportToExcelFiltro() {
+  this.excelExportServiceFiltro.exportOperacionesToExcel(
+    this.datosOperaciones, 
     'Reporte_Operaciones_Largo'
   );
 }

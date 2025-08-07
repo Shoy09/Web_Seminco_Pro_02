@@ -23,7 +23,8 @@ import { RendimientoPromedioComponent } from "../Graficos/rendimiento-promedio/r
 import { PromedioMayasComponent } from "../Graficos/promedio-mayas/promedio-mayas.component";
 import { PromedioNTaladroComponent } from "../Graficos/promedio-n-taladro/promedio-n-taladro.component";
 import * as XLSX from 'xlsx-js-style';
-import { ExcelSostenimientoExportService } from '../../../../services/export/ExcelSostenimientoExportService.service';
+import { ExcelSostenimientoExportService } from '../../../../services/export/general/ExcelSostenimientoExportService.service';
+import { ExcelSostenimientoExportServiceFiltro } from '../../../../services/export/filtro/ExcelSostenimientoExportService.service';
 
 @Component({
   selector: 'app-sostenimiento-graficos',
@@ -68,7 +69,7 @@ private todasLasMetas: Meta[] = [];
   };
 
 
-  constructor(private metaService: MetaSostenimientoService, private operacionService: OperacionService, private excelSostenimientoExportService: ExcelSostenimientoExportService) {}
+  constructor(private metaService: MetaSostenimientoService, private operacionService: OperacionService, private excelSostenimientoExportService: ExcelSostenimientoExportService, private excelSostenimientoExportServiceFiltro: ExcelSostenimientoExportServiceFiltro) {}
  
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -940,6 +941,13 @@ exportarAExcel(): void {
 exportToExcelSostenimiento() {
   this.excelSostenimientoExportService.exportOperacionesToExcel(
     this.datosOperacionesExport, 
+    'Reporte_Operaciones'
+  );
+}
+
+exportToExcelSostenimientoFiltro() {
+  this.excelSostenimientoExportServiceFiltro.exportOperacionesToExcel(
+    this.datosOperaciones, 
     'Reporte_Operaciones'
   );
 }

@@ -1,87 +1,87 @@
 import { Injectable } from '@angular/core';
 import * as XLSX from 'xlsx';
-import { NubeOperacion } from '../../models/operaciones.models';
+import { NubeOperacion } from '../../../models/operaciones.models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExcelExportService {
-  exportOperacionesToExcel(datosOperacionesExport: NubeOperacion[], fileName: string) {
-    // Preparar datos para cada hoja
-    const ejecutadoData = this.prepareEjecutadoData(datosOperacionesExport);
-    const estadosData = this.prepareEstadosData(datosOperacionesExport);
-    const checklistData = this.prepareChecklistData(datosOperacionesExport);
+exportOperacionesToExcel(datosOperacionesExport: NubeOperacion[], fileName: string) {
+  // Filtrar solo operaciones con estado "Cerrado"
+  const operacionesCerradas = datosOperacionesExport.filter(op => 
+    op.estado?.toLowerCase() === 'cerrado' // Case-insensitive
+  );
 
-    // Crear un nuevo libro de trabajo
-    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  // Preparar datos para cada hoja (usando solo operaciones cerradas)
+  const ejecutadoData = this.prepareEjecutadoData(operacionesCerradas);
+  const estadosData = this.prepareEstadosData(operacionesCerradas);
+  const checklistData = this.prepareChecklistData(operacionesCerradas);
 
-    // Añadir hojas al libro con estilos de encabezado
-    const ejecutadoWS = XLSX.utils.json_to_sheet(ejecutadoData);
-    const estadosWS = XLSX.utils.json_to_sheet(estadosData);
-    const checklistWS = XLSX.utils.json_to_sheet(checklistData);
+  // Resto del código permanece igual...
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  const ejecutadoWS = XLSX.utils.json_to_sheet(ejecutadoData);
+  const estadosWS = XLSX.utils.json_to_sheet(estadosData);
+  const checklistWS = XLSX.utils.json_to_sheet(checklistData);
 
-    // Ajustar el ancho de las columnas
-    this.adjustColumnWidth(ejecutadoWS, ejecutadoData);
-    this.adjustColumnWidth(estadosWS, estadosData);
-    this.adjustColumnWidth(checklistWS, checklistData);
+  this.adjustColumnWidth(ejecutadoWS, ejecutadoData);
+  this.adjustColumnWidth(estadosWS, estadosData);
+  this.adjustColumnWidth(checklistWS, checklistData);
 
-    XLSX.utils.book_append_sheet(wb, ejecutadoWS, 'Ejecutado');
-    XLSX.utils.book_append_sheet(wb, estadosWS, 'Estados');
-    XLSX.utils.book_append_sheet(wb, checklistWS, 'Checklist');
+  XLSX.utils.book_append_sheet(wb, ejecutadoWS, 'Ejecutado');
+  XLSX.utils.book_append_sheet(wb, estadosWS, 'Estados');
+  XLSX.utils.book_append_sheet(wb, checklistWS, 'Checklist');
 
-    // Exportar el archivo
-    XLSX.writeFile(wb, `${fileName}_${new Date().toISOString().slice(0,10)}.xlsx`);
-  }
+  XLSX.writeFile(wb, `${fileName}_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
 
-  private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
-    const data: any[] = [];
-    
-    operaciones.forEach(op => {
-      // Si hay horómetros, crear una fila por cada horómetro
-      if (op.horometros && op.horometros.length > 0) {
-        op.horometros.forEach(horometro => {
-          data.push({
-            'ID Operación': op.id,
-            'Turno': op.turno,
-            'Equipo': op.equipo,
-            'Código': op.codigo,
-            'Empresa': op.empresa,
-            'Fecha': op.fecha,
-            'Tipo Operación': op.tipo_operacion,
-            'Estado': op.estado,
-            'Envío': op.envio,
-            'Horómetro - Nombre': horometro.nombre,
-            'Horómetro - Inicial': horometro.inicial,
-            'Horómetro - Final': horometro.final,
-            'Horómetro - OP': horometro.EstaOP ? 'Sí' : 'No',
-            'Horómetro - INOP': horometro.EstaINOP ? 'Sí' : 'No',
-            'Horómetro - ID': horometro.id
-          });
-        });
-      } else {
-        // Si no hay horómetros, exportar solo datos de operación
-        data.push({
-          'ID Operación': op.id,
-          'Turno': op.turno,
-          'Equipo': op.equipo,
-          'Código': op.codigo,
-          'Empresa': op.empresa,
-          'Fecha': op.fecha,
-          'Tipo Operación': op.tipo_operacion,
-          'Estado': op.estado,
-          'Envío': op.envio,
-          'Horómetro - Nombre': 'N/A',
-          'Horómetro - Inicial': 'N/A',
-          'Horómetro - Final': 'N/A',
-          'Horómetro - OP': 'N/A',
-          'Horómetro - INOP': 'N/A',
-          'Horómetro - ID': 'N/A'
-        });
-      }
-    });
-    
-    return data;
-  }
+private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
+  const data: any[] = [];
+  
+  operaciones.forEach(op => {
+    // Crear objeto base para la operación
+    const rowData: any = {
+      'ID Operación': op.id,
+      'Turno': op.turno,
+      'Equipo': op.equipo,
+      'Código': op.codigo,
+      'Empresa': op.empresa,
+      'Fecha': op.fecha,
+      'Tipo Operación': op.tipo_operacion,
+      'Estado': op.estado,
+    };
+
+    // Procesar horómetros si existen
+    if (op.horometros && op.horometros.length > 0) {
+      op.horometros.forEach(horometro => {
+        const nombreNormalizado = horometro.nombre.replace(/\s+/g, '_'); // Normalizar nombre para nombres compuestos
+        
+        // Agregar columnas para cada horómetro (sin el ID)
+        rowData[`Horómetro ${nombreNormalizado} - Inicial`] = horometro.inicial;
+        rowData[`Horómetro ${nombreNormalizado} - Final`] = horometro.final;
+        rowData[`Diferencia ${nombreNormalizado}`] = horometro.final - horometro.inicial;
+        
+        // Determinar el estado operativo según las reglas
+        const opValue = horometro.EstaOP;
+        const inopValue = horometro.EstaINOP;
+        let estadoOperativo;
+        
+        if (opValue && !inopValue) {
+          estadoOperativo = 'Sí';
+        } else if (!opValue && inopValue) {
+          estadoOperativo = 'No';
+        } else {
+          estadoOperativo = 'Sin definir';
+        }
+        
+        rowData[`Horómetro ${nombreNormalizado} - Operativo`] = estadoOperativo;
+      });
+    }
+
+    data.push(rowData);
+  });
+  
+  return data;
+}
 
   private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
     const data: any[] = [];
@@ -105,7 +105,6 @@ export class ExcelExportService {
             'Perf. - Veta': '',
             'Perf. - Nivel': '',
             'Perf. - Tipo Perforación': '',
-            'Perf. - ID': '',
             // Campos de interperforación (inicialmente vacíos)
             'Ejecutado - Código Actividad': '',
             'Ejecutado - Nivel': '',
@@ -117,28 +116,31 @@ export class ExcelExportService {
             'Ejecutado - Ángulo': '',
             'Ejecutado - N° Filas': '',
             'Ejecutado - Detalles': '',
-            'Ejecutado - ID': ''
+            'Metros perforados': 0
           };
 
           // Procesar perforaciones taladro largo si existen
-          if (estado.perforaciones_taladro_largo && estado.perforaciones_taladro_largo.length > 0) {
-            estado.perforaciones_taladro_largo.forEach(perf => {
-              const rowWithPerf = {
-                ...estadoBase,
+          if (estado.perforaciones_taladro_largo?.length) {
+          estado.perforaciones_taladro_largo.forEach(perf => {
+            const rowWithPerf = {
+              ...estadoBase,
                 'Perf. - Zona': perf.zona,
                 'Perf. - Tipo Labor': perf.tipo_labor,
                 'Perf. - Labor': perf.labor,
                 'Perf. - Veta': perf.veta,
                 'Perf. - Nivel': perf.nivel,
                 'Perf. - Tipo Perforación': perf.tipo_perforacion,
-                'Perf. - ID': perf.id
               };
 
               // Procesar interperforaciones si existen
-              if (perf.inter_perforaciones && perf.inter_perforaciones.length > 0) {
-                perf.inter_perforaciones.forEach(inter => {
-                  data.push({
-                    ...rowWithPerf,
+              if (perf.inter_perforaciones?.length) {
+              perf.inter_perforaciones.forEach(inter => {
+                const nTaladro = inter.ntaladro || 0;
+                const longitud = inter.longitud_perforacion || 0;
+                const metrosPerforados = nTaladro * longitud;
+
+                data.push({
+                  ...rowWithPerf,
                     'Ejecutado - Código Actividad': inter.codigo_actividad,
                     'Ejecutado - Nivel': inter.nivel,
                     'Ejecutado - Tajo': inter.tajo,
@@ -149,7 +151,7 @@ export class ExcelExportService {
                     'Ejecutado - Ángulo': inter.angulo_perforacion,
                     'Ejecutado - N° Filas': inter.nfilas_de_hasta,
                     'Ejecutado - Detalles': inter.detalles_trabajo_realizado,
-                    'Ejecutado - ID': inter.id
+                    'Metros perforados': metrosPerforados
                   });
                 });
               } else {
@@ -180,7 +182,6 @@ export class ExcelExportService {
         op.checklists.forEach(check => {
           data.push({
             'ID Operación': op.id,
-            'ID Checklist': check.id,
             'Descripción': check.descripcion,
             'Decisión': check.decision === 1 ? 'Aprobado' : 'Rechazado',
             'Observación': check.observacion,
