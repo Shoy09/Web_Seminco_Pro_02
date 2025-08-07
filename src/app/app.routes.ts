@@ -1,7 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './Components/Principales/login/login.component';
 import { PrincipalComponent } from './Components/Principales/principal/principal.component';
-import { HomeComponent } from './Components/Principales/home/home.component';
 import { EstadosComponent } from './Components/Estado/estados/estados.component';
 import { UsuariosComponent } from './Components/Usuario/usuarios/usuarios.component';
 import { CrearDataComponent } from './Components/Crear datos/crear-data/crear-data.component';
@@ -28,7 +27,6 @@ export const routes: Routes = [
     path: 'Dashboard',
     component: PrincipalComponent, // Layout principal con menú
     children: [
-      { path: 'Home', component: HomeComponent },
       { path: 'estados', component: EstadosComponent },
       { path: 'crear-data', component: CrearDataComponent },
       { path: 'plan-avance', component: PlanMensualListComponent },
