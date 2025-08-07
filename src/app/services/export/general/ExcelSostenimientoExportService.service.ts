@@ -114,8 +114,10 @@ private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
           'Ejecutado - Sección': '',
           'Ejecutado - N° Broca': '',
           'Ejecutado - N° Taladro': '',
+          'Ejecutado - Material': '',
           'Ejecutado - Longitud': '',
           'Ejecutado - Malla Instalada': '',
+          'Ejecutado - Detalles': '',
           'Metros perforados': 0 // Nueva columna
         };
 
@@ -147,8 +149,10 @@ private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
                   'Ejecutado - Sección': inter.seccion_de_labor || '',
                   'Ejecutado - N° Broca': inter.nbroca || '',
                   'Ejecutado - N° Taladro': nTaladro,
+                  'Ejecutado - Material': inter.material,
                   'Ejecutado - Longitud': longitud,
                   'Ejecutado - Malla Instalada': inter.malla_instalada || '',
+                  'Ejecutado - Detalles': inter.detalles_trabajo_realizado || '',
                   'Metros perforados': metrosPerforados
                 });
               });

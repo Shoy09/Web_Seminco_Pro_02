@@ -94,6 +94,7 @@ export interface NubeInterPerforacionTaladroLargo {
   tajo: string;
   nbroca: number;
   ntaladro: number;
+  material: string;
   nbarras: number;
   longitud_perforacion: number;
   angulo_perforacion: number;
@@ -134,6 +135,7 @@ export interface NubeInterPerforacionHorizontal {
   seccion_la_labor: string;
   nbroca: number;
   ntaladro: number;
+  material: string;
   ntaladros_rimados: number;
   longitud_perforacion: number;
   detalles_trabajo_realizado: string;
@@ -172,8 +174,10 @@ export interface NubeInterSostenimiento {
   seccion_de_labor: string;
   nbroca: number;
   ntaladro: number;
+  material: string;
   longitud_perforacion: number;
   malla_instalada: string;
+   detalles_trabajo_realizado: string;
   sostenimiento_id: number;
   createdAt?: string;
   updatedAt?: string;
