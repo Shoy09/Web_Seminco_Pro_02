@@ -17,7 +17,7 @@
       <div class="button-container" *ngFor="let button of buttonc" (click)="abrirModal(button)">
 
         <p class="button-nombre">{{ button.nombre }}</p>
-        <img [src]="button.icon" alt="Ícono" class="button-icon"> 
+        <img [src]="button.icon" alt="Ícono" class="button-icon">
       </div>
     </div>
   </div>
@@ -32,7 +32,7 @@
         <p>{{ editando ? 'Editando ' : 'Creación del tipo de ' }}{{ modalContenido?.nombre }}</p>
       </div>
 
-      <form (submit)="editando ? actualizarDatos() : guardarDatos()">
+      <form (submit)="editando ? actualizarDatos() : guardarDatos()" class="forme">
         <div class="form-group" *ngFor="let campo of modalContenido?.campos">
           <label>{{ campo.label }}</label>
           <div class="input-container">
@@ -52,11 +52,11 @@
           <ng-container *ngIf="!editando; else editButtons">
             <button type="submit" class="btn-submit">Guardar</button>
             <button type="button" class="btn-submit" (click)="triggerFileInput()">
-              Importar Excel <img src="archivo-excel.png" class="side-image" style="width: 20px; height: auto; margin-left: 5px;" />
+              Importar Excel <img src="excel.png" class="side-image"  />
             </button>
             <input type="file" id="fileInput" style="display: none;" (change)="procesarExcelGeneral($event)" accept=".xlsx, .xls" />
           </ng-container>
-          
+
           <ng-template #editButtons>
             <button type="submit" class="btn-submit">Actualizar</button>
             <button type="button" class="btn-submit" (click)="cancelarEdicion()">Cancelar</button>
@@ -89,27 +89,27 @@
     </div>
   </div>
 </div>
-  
+
 
   <!-- Formulario de carga de documento -->
   <div *ngIf="formularioActivo === 'documento'" class="ventana">
     <form class="custom-form">
       <div class="form-row">
-        <div class="form-group">
+        <div class="form-groupu">
           <label for="year" class="titu">Año</label>
           <select id="year">
             <option selected>Seleccione un año</option>
             <option *ngFor="let year of years">{{ year }}</option>
           </select>
         </div>
-        <div class="form-group">
+        <div class="form-groupu">
           <label for="month" class="titu">Mes</label>
           <select id="month">
             <option selected>Seleccione un mes</option>
             <option *ngFor="let mes of meses">{{ mes }}</option>
           </select>
         </div>
-        <div class="form-group">
+        <div class="form-groupu">
           <label for="fileUpload" class="titu">Documento</label>
           <div class="file-upload">
             <label for="fileUpload" class="btn-upload">Subir documento</label>

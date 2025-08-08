@@ -21,7 +21,7 @@
     grid-template-columns: 270px 1fr; /* Menú a la izquierda, contenido a la derecha */
     height: 100vh;
     }
-    
+
     /* Menú lateral */
     .sidebar {
       background-color: white;
@@ -32,7 +32,7 @@
     }
     .user{
       background-color: #CCEAF3;
-      
+
       padding: 6px 15px ;
       border-radius: 5px;
       color:black;
@@ -40,10 +40,9 @@
     align-items: center;  /* Centrar verticalmente */
     gap: 10px;
     margin-top: 80px;
-    margin-bottom: 60px;
+    margin-bottom: 20px;
     justify-content: space-between;
     }
-  
     .user-info {
       display: flex;
       flex-direction: column;  /* Alinear el user y rol verticalmente */
@@ -53,7 +52,7 @@
     .user-info p{
       margin:0;
       padding: 0;
-  
+
     }
     .user-info .nombre{
       font-weight: bold;
@@ -66,11 +65,11 @@
       text-align: center;
       margin-top: 0;
       margin-bottom: 20px;
-      
+
     }
     .logop{
       max-width: 40px;
-      
+
     }
     .logo {
       max-width: 100px;
@@ -86,7 +85,8 @@
       list-style: none;
       padding: 0;
       cursor: pointer;
-      
+      margin-top:50px;
+
     }
     .menuopc{
       display: flex;  /* alinear horizontalmente */
@@ -101,13 +101,13 @@
     }
     .menu-opci{
       display: flex;
-      flex-direction: column; 
+      flex-direction: column;
       align-items: flex-start;
-      
+
     }
     .menu-item {
       background: none;
-      
+
       border: none;
       color: black;
       padding: 10px;
@@ -117,23 +117,23 @@
       font-size: 14px;
       font-family: 'Bold';
       cursor: pointer;
-      
+
     }
-   
+
     .menuopc:hover {
       background:  #CCEAF3;;
       color: black;
       border-radius: 2px;
     }
     .menu-item:hover {
-      color: black; 
+      color: black;
     }
-    
-  
+
+
     .menuopc.active {
       margin-bottom: 0;
       border-bottom-left-radius: 0;
-  
+
       border-bottom-right-radius: 0;
   }
     .submenu {
@@ -143,11 +143,11 @@
       background-color: #d0e7f963;;  /* Fondo del submenú */
       transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;  /* Animación */
       max-height: 0; /* Inicia con altura 0 */
-      padding: 0; 
+      padding: 0;
       border-radius: 5px;
       text-align: left;
       font-size: 14px;
-      
+
     }
     .submenu.show {
       display: block;  /* Se muestra cuando la clase 'show' está presente */
@@ -159,14 +159,14 @@
     .submenu li {
       padding: 10px;
       cursor: pointer;
-      
+
       border-radius: 5px;
       position: relative;
       display: flex;
       align-items: center;
       gap: 15px;
     }
-    
+
     .submenu li a {
       color: black;
       text-decoration: none;
@@ -175,22 +175,22 @@
       width: 100%;
       border-radius: 5px;
       transition: background-color 0.3s ease;
-      box-sizing: border-box; 
+      box-sizing: border-box;
       position: relative;
       font-family: 'Medium';
     }
     .submenu li:hover {
       background: #CCEAF3; /* Cambiar el color del texto al pasar el ratón */
-  
-  
+
+
       }
-  
+
   .submenu li.selected {
-    
+
     border-radius: 5px; /* Bordes redondeados en todo el ítem */
     color: black; /* Asegura que el texto sea visible */
   }
-  
+
   /* Asegura que el enlace dentro del ítem también se seleccione correctamente */
   .submenu li a {
     color: black;
@@ -203,7 +203,7 @@
     box-sizing: border-box;
     position: relative;
   }
-  
+
   .submenu li a.selected {
     background-color: #bde4f0c4; /* Fondo de selección para el enlace */
     padding: 10px;
@@ -212,18 +212,18 @@
     display: flex;
     align-items: center;
   }
-  
-  
-  
+
+
+
   .submenu li::before {
     content: "";
     width: 10px;
     height: 10px;
     border: 2px solid #888;
     border-radius: 90%;
-    display: inline-block;  
-    margin-right: 15px; 
-  
+    display: inline-block;
+    margin-right: 15px;
+
   }
   .menuopc.active {
       background-color: #CCEAF3; /* Color de fondo cuando el menú está marcado */
@@ -239,25 +239,25 @@
       height: 30px;
       box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
     }
-    
+
     .home-item {
         display: flex;
         align-items: center;
         justify-content: left;
         gap: 50px;
-    
+
          /* Ajusta el valor según lo que necesites */
       }
-    
+
     .notifications {
       position: relative;
     }
-    
+
     .bell-icon {
       width: 15px;
       cursor: pointer;
     }
-  
+
   .content {
     padding: 20px;
   }
@@ -266,7 +266,7 @@
     /*padding-top: 300px;*/
     padding-top: 650px;
   }
-  
+
   .sidebar .menuopc {
     display: flex;
     align-items: center;
@@ -294,7 +294,7 @@
   .sidebar.colapsado .user {
     display: none;
   }
-  
+
   .floating-toggle {
     position: fixed;
     bottom: 20px;
@@ -311,11 +311,11 @@
     box-shadow: 0 0 5px rgba(0,0,0,0.2);
     z-index: 1000;
   }
-  
+
   .sidebar.colapsado ~ .floating-toggle {
     left: 35px;
   }
-  
+
   .floating-toggle img {
     width: 18px;
     height: 18px;
@@ -325,3 +325,31 @@
   .layout-container.colapsado {
     grid-template-columns: 100px 1fr;
   }
+
+.cerrar-sesion {
+  margin-left: 0px; /* para alinear con el contenido del usuario */
+
+    background-color: rgba(240, 240, 240, 0.95); /* fondo claro, estilo menú */
+    padding: 10px 15px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); /* efecto flotante */
+    display: flex;
+    flex-direction: column;
+    gap: 2px; /* espacio entre botones */
+
+}
+.cerrar-sesion .bcs{
+      /* Quitar espacio arriba */
+    margin-bottom: 4px;
+    cursor: pointer;
+      padding: 8px 12px;
+      color: #333;
+      font-size: 14px;
+      text-align:center;
+      transition: background-color 0.1s;
+       border: 1.5px solid #ccc; /* esquinas redondeadas */
+       border-radius:4px;
+}
+
+.cerrar-sesion .bcs:hover {
+  background-color: #e0e0e0;
+}
