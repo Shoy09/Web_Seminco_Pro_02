@@ -109,6 +109,7 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
           'Perf. Horizontal - Veta': '',
           'Perf. Horizontal - Nivel': '',
           'Perf. Horizontal - Tipo Perforación': '',
+          'Perf. - Observación': '',
           'Ejecutado - Código Actividad': '',
           'Ejecutado - Nivel': '',
           'Ejecutado - Labor': '',
@@ -132,7 +133,8 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
               'Perf. Horizontal - Labor': perf.labor || '',
               'Perf. Horizontal - Veta': perf.veta || '',
               'Perf. Horizontal - Nivel': perf.nivel || '',
-              'Perf. Horizontal - Tipo Perforación': perf.tipo_perforacion || ''
+              'Perf. Horizontal - Tipo Perforación': perf.tipo_perforacion || '',
+              'Perf. Horizontal - Observación': perf.observacion || ''
             };
 
             // Procesar interperforaciones horizontales si existen

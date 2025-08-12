@@ -108,6 +108,7 @@ private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
           'Sost. - Veta': '',
           'Sost. - Nivel': '',
           'Sost. - Tipo Perforación': '',
+          'Sost. - Observación': '',
           'Ejecutado - Código Actividad': '',
           'Ejecutado - Nivel': '',
           'Ejecutado - Labor': '',
@@ -131,7 +132,8 @@ private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
               'Sost. - Labor': sost.labor || '',
               'Sost. - Veta': sost.veta || '',
               'Sost. - Nivel': sost.nivel || '',
-              'Sost. - Tipo Perforación': sost.tipo_perforacion || ''
+              'Sost. - Tipo Perforación': sost.tipo_perforacion || '',
+              'Sost. - Observación': sost.observacion || ''
             };
 
             // Procesar inter-sostenimientos si existen

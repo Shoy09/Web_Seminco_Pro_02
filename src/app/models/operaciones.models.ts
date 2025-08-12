@@ -77,6 +77,7 @@ export interface NubePerforacionTaladroLargo {
   veta: string;
   nivel: string;
   tipo_perforacion: string;
+  observacion?: string;
   estado_id: number;
   createdAt?: string;
   updatedAt?: string;
@@ -117,6 +118,7 @@ export interface NubePerforacionHorizontal {
   veta: string;
   nivel: string;
   tipo_perforacion: string;
+  observacion?: string;
   estado_id: number;
   createdAt?: string;
   updatedAt?: string;
@@ -156,6 +158,7 @@ export interface NubeSostenimiento {
   veta: string;
   nivel: string;
   tipo_perforacion: string;
+  observacion?: string;
   estado_id: number;
   createdAt?: string;
   updatedAt?: string;

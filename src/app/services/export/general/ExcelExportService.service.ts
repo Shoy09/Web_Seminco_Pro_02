@@ -105,6 +105,7 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
             'Perf. - Veta': '',
             'Perf. - Nivel': '',
             'Perf. - Tipo Perforación': '',
+            'Perf. - Observación': '',
             // Campos de interperforación (inicialmente vacíos)
             'Ejecutado - Código Actividad': '',
             'Ejecutado - Nivel': '',
@@ -131,6 +132,7 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
                 'Perf. - Veta': perf.veta,
                 'Perf. - Nivel': perf.nivel,
                 'Perf. - Tipo Perforación': perf.tipo_perforacion,
+                'Perf. - Observación': perf.observacion || ''
               };
 
               // Procesar interperforaciones si existen
