@@ -1,51 +1,46 @@
-mat-dialog-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
+.contenedor-dialogo {
+  position: relative;
+  padding: 16px;
+}
+
+.boton-cerrar-x {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.titulo-dialogo-texto {
+  margin: 40px 0 4px 0; /* margen superior para que no quede pegado a la X */
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
 }
 
 mat-divider {
-  width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .contenedor-botones {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom:20px;
+}
+
+.boton-proceso{
+ padding: 20px 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background-color: #cceaf388;
+  cursor: pointer;
+font-size:14px;
+  display: flex;
+  text-align: center;
   justify-content: center;
-  gap: 15px;
-  margin-top: 15px;
-  width: 100%;
-}
-
-.boton-proceso, .boton-cerrar {
-  width: 280px; /* Misma anchura para todos */
-  height: 50px; /* Misma altura para todos */
-  font-size: 16px;
-  font-weight: bold;
-  text-transform: uppercase;
-  border-radius: 25px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease-in-out;
-}
-
-.boton-proceso {
-  background: linear-gradient(45deg, #2196F3, #64B5F6);
-  color: white;
-}
-
-.boton-proceso:hover {
-  background: linear-gradient(45deg, #1E88E5, #42A5F5);
-  transform: scale(1.05);
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.3);
-}
-
-.boton-cerrar {
-  background-color: #d32f2f;
-  color: white;
-}
-
-.boton-cerrar:hover {
-  background-color: #b71c1c;
+  gap: 5px;
+  box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.1);
 }
