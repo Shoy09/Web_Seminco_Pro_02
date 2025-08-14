@@ -28,6 +28,7 @@ import { RendimientoPromedioComponent } from "../Graficos/rendimiento-promedio/r
 import * as XLSX from 'xlsx-js-style';
 import { ExcelHorizontalExportService } from '../../../../services/export/general/ExcelHorizontalExportService.service';
 import { ExcelHorizontalExportServiceFiltro } from '../../../../services/export/filtro/ExcelHorizontalExportService.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-taladro-horizontal-grafica',
@@ -49,6 +50,12 @@ export class TaladroHorizontalGraficaComponent implements OnInit {
   datosHorometros: any[] = [];
   datosGraficoEstados: any[] = [];
   datosOperacionesOriginal: NubeOperacion[] = [];
+  
+  fechaDesde: string = '';
+fechaHasta: string = '';
+turnoSeleccionado: string = '';
+turnos: string[] = ['DÍA', 'NOCHE'];
+
   private todasLasMetas: Meta[] = [];
   metasPorGrafico: { 
     [key: string]: Meta[] 
@@ -74,13 +81,8 @@ export class TaladroHorizontalGraficaComponent implements OnInit {
   };
   
 
-  fechaDesde: string = '';
-fechaHasta: string = '';
-turnoSeleccionado: string = '';
-turnos: string[] = ['DÍA', 'NOCHE'];
 
-
-  constructor(private metaService: MetaService, private operacionService: OperacionService,private excelHorizontalExportService: ExcelHorizontalExportService, private excelHorizontalExportServicefiltro: ExcelHorizontalExportServiceFiltro) {}
+  constructor(private _toastr: ToastrService, private metaService: MetaService, private operacionService: OperacionService,private excelHorizontalExportService: ExcelHorizontalExportService, private excelHorizontalExportServicefiltro: ExcelHorizontalExportServiceFiltro) {}
 
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -291,8 +293,12 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
         this.prepararDatosHorometros();
         this.prepararDatosGraficoEstados();
         this.prepararDatoRendimientoPerforacion();
+
+        this._toastr.success('Datos cargados correctamente', 'Éxito');
+
       },
       error: (err) => {
+        this._toastr.error('No se pudieron obtener los datos', 'Error');
         console.error('❌ Error al obtener datos:', err);
       }
     });

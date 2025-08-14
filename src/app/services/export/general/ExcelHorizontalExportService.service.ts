@@ -120,7 +120,7 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
           'Ejecutado - N° Taladros Rimados': '',
           'Ejecutado - Longitud': '',
           'Ejecutado - Detalles': '',
-          'Metros perforados': 0 // Nueva columna
+          'Ejecutado - Metros perforados': 0 // Nueva columna
         };
 
         // Procesar perforaciones horizontales si existen
@@ -140,11 +140,6 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
             // Procesar interperforaciones horizontales si existen
             if (perf.inter_perforaciones_horizontal?.length) {
               perf.inter_perforaciones_horizontal.forEach(inter => {
-                const nTaladro = inter.ntaladro || 0;
-                const nTaladrosRimados = inter.ntaladros_rimados || 0;
-                const longitud = inter.longitud_perforacion || 0;
-                const metrosPerforados = (nTaladro + nTaladrosRimados) * longitud;
-
                 data.push({
                   ...rowWithPerf,
                   'Ejecutado - Código Actividad': inter.codigo_actividad || '',
@@ -152,12 +147,12 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
                   'Ejecutado - Labor': inter.labor || '',
                   'Ejecutado - Sección': inter.seccion_la_labor || '',
                   'Ejecutado - N° Broca': inter.nbroca || '',
-                  'Ejecutado - N° Taladro': nTaladro,
+                  'Ejecutado - N° Taladro': inter.ntaladro,
                   'Ejecutado - Material': inter.material,
-                  'Ejecutado - N° Taladros Rimados': nTaladrosRimados,
-                  'Ejecutado - Longitud': longitud,
+                  'Ejecutado - N° Taladros Rimados': inter.ntaladros_rimados,
+                  'Ejecutado - Longitud': inter.longitud_perforacion,
                   'Ejecutado - Detalles': inter.detalles_trabajo_realizado || '',
-                  'Metros perforados': metrosPerforados
+                  'Ejecutado - Metros perforados': inter.metros_perforados || '',
                 });
               });
             } else {

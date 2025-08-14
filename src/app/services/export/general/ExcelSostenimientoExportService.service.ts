@@ -119,7 +119,7 @@ private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
           'Ejecutado - Longitud': '',
           'Ejecutado - Malla Instalada': '',
           'Ejecutado - Detalles': '',
-          'Metros perforados': 0 // Nueva columna
+          'Ejecutado - Metros perforados': 0 // Nueva columna
         };
 
         // Procesar sostenimientos si existen
@@ -139,23 +139,20 @@ private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
             // Procesar inter-sostenimientos si existen
             if (sost.inter_sostenimientos?.length) {
               sost.inter_sostenimientos.forEach(inter => {
-                const nTaladro = inter.ntaladro || 0;
-                const longitud = inter.longitud_perforacion || 0;
-                const metrosPerforados = nTaladro * longitud;
-
                 data.push({
+                  ...rowWithSost,
                   ...rowWithSost,
                   'Ejecutado - Código Actividad': inter.codigo_actividad || '',
                   'Ejecutado - Nivel': inter.nivel || '',
                   'Ejecutado - Labor': inter.labor || '',
                   'Ejecutado - Sección': inter.seccion_de_labor || '',
                   'Ejecutado - N° Broca': inter.nbroca || '',
-                  'Ejecutado - N° Taladro': nTaladro,
+                  'Ejecutado - N° Taladro': inter.ntaladro,
                   'Ejecutado - Material': inter.material,
-                  'Ejecutado - Longitud': longitud,
+                  'Ejecutado - Longitud': inter.longitud_perforacion,
                   'Ejecutado - Malla Instalada': inter.malla_instalada || '',
                   'Ejecutado - Detalles': inter.detalles_trabajo_realizado || '',
-                  'Metros perforados': metrosPerforados
+                  'Ejecutado - Metros perforados': inter.metros_perforados || '',
                 });
               });
             } else {

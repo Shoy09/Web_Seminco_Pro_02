@@ -23,6 +23,7 @@ import { RendimientoPromedioComponent } from "../Graficos/rendimiento-promedio/r
 import * as XLSX from 'xlsx-js-style';
 import { ExcelExportService } from '../../../../services/export/general/ExcelExportService.service';
 import { ExcelExportServiceLargoFiltro } from '../../../../services/export/filtro/ExcelExportService.service';
+import { ToastrService } from 'ngx-toastr';
 
  
 @Component({
@@ -64,7 +65,7 @@ private todasLasMetas: Meta[] = [];
   };
 
  
-  constructor(private metaService: MetaLargoService, private operacionService: OperacionService, private excelExportService: ExcelExportService, private excelExportServiceFiltro: ExcelExportServiceLargoFiltro) {}
+  constructor(private _toastr: ToastrService, private metaService: MetaLargoService, private operacionService: OperacionService, private excelExportService: ExcelExportService, private excelExportServiceFiltro: ExcelExportServiceLargoFiltro) {}
  
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -265,9 +266,11 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
         this.prepararDatosHorometros();
         this.prepararDatosGraficoEstados();
         this.prepararDatoRendimientoPerforacion();
+        this._toastr.success('Datos cargados correctamente', 'Éxito');
       },
       error: (err) => {
         console.error('❌ Error al obtener datos:', err);
+        this._toastr.error('No se pudieron obtener los datos', 'Error');
       }
     });
   }

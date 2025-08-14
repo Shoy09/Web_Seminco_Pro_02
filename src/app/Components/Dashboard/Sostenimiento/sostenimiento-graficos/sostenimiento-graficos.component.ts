@@ -25,6 +25,7 @@ import { PromedioNTaladroComponent } from "../Graficos/promedio-n-taladro/promed
 import * as XLSX from 'xlsx-js-style';
 import { ExcelSostenimientoExportService } from '../../../../services/export/general/ExcelSostenimientoExportService.service';
 import { ExcelSostenimientoExportServiceFiltro } from '../../../../services/export/filtro/ExcelSostenimientoExportService.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-sostenimiento-graficos',
@@ -69,7 +70,7 @@ private todasLasMetas: Meta[] = [];
   };
 
 
-  constructor(private metaService: MetaSostenimientoService, private operacionService: OperacionService, private excelSostenimientoExportService: ExcelSostenimientoExportService, private excelSostenimientoExportServiceFiltro: ExcelSostenimientoExportServiceFiltro) {}
+  constructor(private _toastr: ToastrService, private metaService: MetaSostenimientoService, private operacionService: OperacionService, private excelSostenimientoExportService: ExcelSostenimientoExportService, private excelSostenimientoExportServiceFiltro: ExcelSostenimientoExportServiceFiltro) {}
  
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -273,9 +274,11 @@ private obtenerMesDeFecha(fecha: string): string {
         this.prepararDatosMalla();
         this.prepararDatosNtaladro();
         this.prepararDatoRendimientoPerforacion();
+        this._toastr.success('Datos cargados correctamente', 'Éxito');
       },
       error: (err) => {
         console.error('❌ Error al obtener datos:', err);
+        this._toastr.error('No se pudieron obtener los datos', 'Error');
       }
     });
   }

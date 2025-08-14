@@ -140,6 +140,7 @@ export interface NubeInterPerforacionHorizontal {
   material: string;
   ntaladros_rimados: number;
   longitud_perforacion: number;
+   metros_perforados?: number;
   detalles_trabajo_realizado: string;
   perforacionhorizontal_id: number;
   createdAt?: string;
@@ -180,6 +181,7 @@ export interface NubeInterSostenimiento {
   material: string;
   longitud_perforacion: number;
   malla_instalada: string;
+   metros_perforados?: number;
    detalles_trabajo_realizado: string;
   sostenimiento_id: number;
   createdAt?: string;
