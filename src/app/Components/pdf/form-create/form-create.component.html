@@ -19,10 +19,10 @@
     </select>
   </div>
 
-  <!-- Nuevos campos -->
   <div class="form-group">
     <label for="tipo_labor">TIPO DE LABOR:</label>
-    <select id="tipo_labor" formControlName="tipo_labor" required>
+    <select id="tipo_labor" formControlName="tipo_labor" required [disabled]="tiposLabor.length === 0">
+      <option *ngIf="tiposLabor.length === 0" value="" disabled selected>Seleccione un proceso válido</option>
       <option *ngFor="let tipo of tiposLabor" [value]="tipo">
         {{ tipo }}
       </option>
@@ -31,7 +31,8 @@
 
   <div class="form-group">
     <label for="labor">LABOR:</label>
-    <select id="labor" formControlName="labor" required>
+    <select id="labor" formControlName="labor" required [disabled]="labores.length === 0">
+      <option *ngIf="labores.length === 0" value="" disabled selected>Seleccione un tipo de labor</option>
       <option *ngFor="let labor of labores" [value]="labor">
         {{ labor }}
       </option>
@@ -39,17 +40,21 @@
   </div>
 
   <div class="form-group">
-    <label for="ala">ALA:</label>
-    <select id="ala" formControlName="ala" required>
-      <option *ngFor="let ala of alas" [value]="ala">
-        {{ ala }}
-      </option>
-    </select>
-  </div>
+  <label for="ala">ALA:</label>
+  <select id="ala" formControlName="ala" [disabled]="alas.length === 0">
+    <option value="">-- No especificado --</option>
+    <option *ngFor="let ala of alas" [value]="ala">
+      {{ ala }}
+    </option>
+  </select>
+</div>
 
   <div class="form-group">
     <label for="pdf">SELECCIONA PDF:</label>
     <input id="pdf" type="file" (change)="onFileSelected($event)" accept="application/pdf" required />
+    <small *ngIf="createForm.get('pdf')?.hasError('invalidType')" class="error-message">
+      Por favor seleccione un archivo PDF válido
+    </small>
   </div>
 
   <div class="form-actions">
