@@ -29,10 +29,10 @@ export class ExcelSostenimientoExportService {
     this.adjustColumnWidth(ejecutadoWS, ejecutadoData);
     this.adjustColumnWidth(estadosWS, estadosData);
     this.adjustColumnWidth(checklistWS, checklistData);
-
-    XLSX.utils.book_append_sheet(wb, ejecutadoWS, 'Ejecutado');
-    XLSX.utils.book_append_sheet(wb, estadosWS, 'Estados');
-    XLSX.utils.book_append_sheet(wb, checklistWS, 'Checklist');
+    
+    XLSX.utils.book_append_sheet(wb, ejecutadoWS, 'EJECUTADOSOS');
+    XLSX.utils.book_append_sheet(wb, estadosWS, 'ESTADOSSOS');
+    XLSX.utils.book_append_sheet(wb, checklistWS, 'CHECK LISTSOS');
 
     // Exportar el archivo
     XLSX.writeFile(wb, `${fileName}_Sostenimiento_${new Date().toISOString().slice(0,10)}.xlsx`);

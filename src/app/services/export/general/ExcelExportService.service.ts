@@ -27,9 +27,9 @@ exportOperacionesToExcel(datosOperacionesExport: NubeOperacion[], fileName: stri
   this.adjustColumnWidth(estadosWS, estadosData);
   this.adjustColumnWidth(checklistWS, checklistData);
 
-  XLSX.utils.book_append_sheet(wb, ejecutadoWS, 'Ejecutado');
-  XLSX.utils.book_append_sheet(wb, estadosWS, 'Estados');
-  XLSX.utils.book_append_sheet(wb, checklistWS, 'Checklist');
+  XLSX.utils.book_append_sheet(wb, ejecutadoWS, 'EJECUTADOTL');
+  XLSX.utils.book_append_sheet(wb, estadosWS, 'ESTADOSTL');
+  XLSX.utils.book_append_sheet(wb, checklistWS, 'CHECK LISTTL');
 
   XLSX.writeFile(wb, `${fileName}_${new Date().toISOString().slice(0,10)}.xlsx`);
 }

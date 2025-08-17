@@ -31,9 +31,9 @@ export class ExcelHorizontalExportService {
     this.adjustColumnWidth(estadosWS, estadosData);
     this.adjustColumnWidth(checklistWS, checklistData);
 
-    XLSX.utils.book_append_sheet(wb, ejecutadoWS, 'Ejecutado');
-    XLSX.utils.book_append_sheet(wb, estadosWS, 'Estados');
-    XLSX.utils.book_append_sheet(wb, checklistWS, 'Checklist');
+    XLSX.utils.book_append_sheet(wb, ejecutadoWS, 'EJECUTADOFR');
+    XLSX.utils.book_append_sheet(wb, estadosWS, 'ESTADOSFR');
+    XLSX.utils.book_append_sheet(wb, checklistWS, 'CHECK LISTFR');
 
     // Exportar el archivo
     XLSX.writeFile(wb, `${fileName}_Horizontal_${new Date().toISOString().slice(0,10)}.xlsx`);
