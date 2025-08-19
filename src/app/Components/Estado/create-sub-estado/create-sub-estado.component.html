@@ -1,0 +1,37 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>Crear Sub Estado</h2>
+
+  <form [formGroup]="subEstadoForm" (ngSubmit)="onSubmit()" mat-dialog-content>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Código</mat-label>
+      <input matInput formControlName="codigo" required>
+      <mat-error *ngIf="subEstadoForm.get('codigo')?.hasError('required')">
+        El código es requerido
+      </mat-error>
+      <mat-error *ngIf="subEstadoForm.get('codigo')?.hasError('maxLength')">
+        Máximo 50 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Tipo de Estado</mat-label>
+      <input matInput formControlName="tipo_estado" required>
+      <mat-error *ngIf="subEstadoForm.get('tipo_estado')?.hasError('required')">
+        El tipo de estado es requerido
+      </mat-error>
+      <mat-error *ngIf="subEstadoForm.get('tipo_estado')?.hasError('maxLength')">
+        Máximo 100 caracteres
+      </mat-error>
+    </mat-form-field>
+  </form>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()">Cancelar</button>
+    <button mat-raised-button color="primary" 
+            (click)="onSubmit()" 
+            [disabled]="subEstadoForm.invalid || loading">
+      <span *ngIf="!loading">Guardar</span>
+      <span *ngIf="loading">Guardando...</span>
+    </button>
+  </div>
+</div>

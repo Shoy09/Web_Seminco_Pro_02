@@ -126,5 +126,50 @@
     color: #dc3545; /* Color rojo para eliminar */
   }
   
-  
-  
+/* Agrega esto a tu archivo CSS */
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px; /* Espacio entre los iconos */
+}
+
+.icon-action {
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.bi-gear {
+  color: #3f51b5; /* Color azul */
+}
+
+.bi-eye {
+  color: #4caf50; /* Color verde */
+}
+
+.icon-action:hover {
+  transform: scale(1.1);
+  opacity: 0.8;
+}
+
+.bi-gear:hover {
+  color: #303f9f; /* Azul más oscuro al hacer hover */
+}
+
+.bi-eye:hover {
+  color: #388e3c; /* Verde más oscuro al hacer hover */
+}
+/* Mantén los estilos existentes y agrega/modifica estos */
+.bi-plus-circle {
+  color: #4caf50; /* Color verde */
+}
+
+.bi-plus-circle:hover {
+  color: #388e3c; /* Verde más oscuro al hacer hover */
+}
+
+/* Opcional: Ajusta el tamaño si es necesario */
+.icon-action {
+  font-size: 1.3rem; /* Un poco más grande que el estándar */
+}

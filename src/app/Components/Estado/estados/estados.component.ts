@@ -11,10 +11,13 @@ import { SeleccionProcesoEstatosDialogComponent } from '../seleccion-proceso-est
 import { Estado } from '../../../models/Estado';
 import { EstadoService } from '../../../services/estado.service';
 import { ConfirmDialogComponent } from '../../Reutilizables/confirm-dialog/confirm-dialog.component';
+import { CommonModule } from '@angular/common';
+import { ListSubEstadoComponent } from '../list-sub-estado/list-sub-estado.component';
+import { CreateSubEstadoComponent } from '../create-sub-estado/create-sub-estado.component';
 
 @Component({
   selector: 'app-estados',
-  imports: [ReactiveFormsModule, MatTableModule, MatPaginatorModule],
+  imports: [ReactiveFormsModule, MatTableModule, MatPaginatorModule, CommonModule],
   templateUrl: './estados.component.html',
   styleUrl: './estados.component.css'
 })
@@ -120,5 +123,29 @@ export class EstadosComponent implements OnInit {
   //     }
   //   });
   // }
+
+abrirDialogoSubEstado(idEstado: number): void {
+  const dialogRef = this.dialog.open(CreateSubEstadoComponent, {
+    width: '500px',
+    data: { idEstado: idEstado }
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      // Recargar la lista de subestados si se creó uno nuevo
+      console.log('Subestado creado exitosamente');
+    }
+  });
+}
+
+abrirDialogoVerDetalles(idEstado: number): void {
+  const dialogRef = this.dialog.open(ListSubEstadoComponent, {
+    width: '800px', // Aumenta este valor según necesites
+    maxWidth: '95vw', // Limita el ancho máximo al 95% del viewport
+    maxHeight: '90vh', // Limita la altura máxima al 90% del viewport
+    panelClass: 'custom-dialog-container', // Clase CSS personalizada
+    data: { idEstado: idEstado }
+  });
+}
   
 }

@@ -1,0 +1,84 @@
+/* Estilos para el contenedor del diálogo */
+.custom-dialog-container .mat-dialog-container {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dialog-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+}
+
+/* Contenido del diálogo */
+mat-dialog-content {
+  flex: 1;
+  overflow: auto;
+  min-height: 0; /* Necesario para el correcto funcionamiento del flex */
+  margin: 0 -24px;
+  padding: 0 24px;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  table-layout: auto;
+}
+
+/* Cabeceras de tabla */
+.mat-header-cell {
+  font-weight: bold;
+  background-color: #f5f5f5;
+}
+
+/* Filas de tabla */
+.mat-row, .mat-header-row {
+  min-width: 100%;
+  width: 100%;
+  white-space: nowrap;
+}
+
+/* Celda de tabla */
+.mat-cell, .mat-header-cell {
+  padding: 8px 16px;
+  text-align: left;
+}
+
+/* Acciones */
+.icon-action {
+  cursor: pointer;
+  color: #f44336;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+}
+
+.icon-action:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
+
+/* Mensaje sin resultados */
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+/* Spinner de carga */
+.loading-spinner {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+}
+
+/* Botones del diálogo */
+mat-dialog-actions {
+  padding: 12px 0 0 0;
+  margin: 0 -24px;
+  padding: 12px 24px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}

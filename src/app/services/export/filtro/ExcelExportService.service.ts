@@ -39,6 +39,7 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
   
   operaciones.forEach(op => {
     // Crear objeto base para la operación
+        const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
     const rowData: any = {
       'ID Operación': op.id,
       'Turno': op.turno,
@@ -46,6 +47,7 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
       'Código': op.codigo,
       'Empresa': op.empresa,
       'Fecha': op.fecha,
+      'Fecha_Mina': fechaMina,
       'Tipo Operación': op.tipo_operacion,
       'Estado': op.estado,
     };
@@ -87,6 +89,7 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
     const data: any[] = [];
     
     operaciones.forEach(op => {
+       const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
       if (op.estados && op.estados.length > 0) {
         op.estados.forEach(estado => {
           // Datos base del estado
@@ -118,7 +121,8 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
             'Ejecutado - Ángulo': '',
             'Ejecutado - N° Filas': '',
             'Ejecutado - Detalles': '',
-            'Metros perforados': 0
+            'Metros perforados': 0,
+            'Fecha_Mina': fechaMina, 
           };
 
           // Procesar perforaciones taladro largo si existen
@@ -178,6 +182,19 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
     return data;
   }
 
+  private calcularFechaMina(fechaOriginal: string, turno: string): string {
+  if (!fechaOriginal) return '';
+  
+  // Si el turno es "Noche", sumar un día a la fecha original
+  if (turno?.toLowerCase() === 'noche') {
+    const fecha = new Date(fechaOriginal);
+    fecha.setDate(fecha.getDate() + 1);
+    return fecha.toISOString().split('T')[0];
+  }
+  
+  // Para cualquier otro caso (incluyendo turno "Dia"), usar la fecha original
+  return fechaOriginal.split('T')[0];
+}
   private prepareChecklistData(operaciones: NubeOperacion[]): any[] {
     const data: any[] = [];
     

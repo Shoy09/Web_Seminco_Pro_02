@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service'; // Importamos ApiService
 import { BehaviorSubject, Observable, tap } from 'rxjs';
-import { Estado, Estado2 } from '../models/Estado';
+import { Estado, Estado2, SubEstado } from '../models/Estado';
 
 @Injectable({
   providedIn: 'root'
@@ -47,4 +47,25 @@ export class EstadoService {
     return this.apiService.deleteDatos(`${this.baseUrl}/${id}`);
   }
   
+    // ================= SUBESTADOS =================
+
+  // Obtener subestados de un estado principal
+ getSubEstadosByEstadoId(estadoId: number): Observable<SubEstado[]> {
+    return this.apiService.getDatos(`${this.baseUrl}/${estadoId}/subestados`);
+  }
+
+  // Crear un subestado para un estado principal
+  createSubEstado(estadoId: number, subEstado: SubEstado): Observable<SubEstado> {
+    return this.apiService.postDatos(`${this.baseUrl}/${estadoId}/subestados`, subEstado);
+  }
+
+  // Actualizar un subestado por ID
+  updateSubEstado(id: number, subEstado: SubEstado): Observable<SubEstado> {
+    return this.apiService.putDatos(`${this.baseUrl}/subestados/${id}`, subEstado);
+  }
+
+  // Eliminar un subestado por ID
+  deleteSubEstado(id: number): Observable<any> {
+    return this.apiService.deleteDatos(`${this.baseUrl}/subestados/${id}`);
+  }
 }
