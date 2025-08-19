@@ -44,7 +44,6 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
   
   operaciones.forEach(op => {
     // Crear objeto base para la operación
-        const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
     const rowData: any = {
       'ID Operación': op.id,
       'Turno': op.turno,
@@ -52,7 +51,6 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
       'Código': op.codigo,
       'Empresa': op.empresa,
       'Fecha': op.fecha,
-      'Fecha_Mina': fechaMina,
       'Tipo Operación': op.tipo_operacion,
       'Estado': op.estado,
     };
@@ -83,7 +81,8 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
         rowData[`Horómetro ${nombreNormalizado} - Operativo`] = estadoOperativo;
       });
     }
-
+const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
+    rowData['Fecha_Mina'] = fechaMina;
     data.push(rowData);
   });
   
