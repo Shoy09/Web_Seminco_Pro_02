@@ -46,5 +46,8 @@ actualizarOperacionesAutorizadas(id: number, operaciones: { [key: string]: boole
   });
 }
 
-  
+obtenerRol(): Observable<{ rol: string }> {
+  return this.apiService.getDatos('usuarios/rol');
+}
+
 }

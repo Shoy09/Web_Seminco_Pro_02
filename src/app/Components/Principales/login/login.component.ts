@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from '../../../services/auth-service.service';
+import { UsuarioService } from '../../../services/usuario.service';
+import { UserStateService } from '../user-state.service';
 
 @Component({
   selector: 'app-login',
@@ -21,38 +23,55 @@ export class LoginComponent {
   constructor(
     private readonly router: Router,
     private authService: AuthService,
-    private _toastr: ToastrService // Inyecta ToastrService
+    private usuarioService: UsuarioService,
+    private _toastr: ToastrService,
+    private userStateService: UserStateService
   ) {}
 
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
 
-  login() {
-    if (!this.codigo_dni || !this.password) {
-      this.errorMessage = 'Por favor, ingresa todos los campos.';
-      this._toastr.warning(this.errorMessage, 'Advertencia'); // Muestra una notificación de advertencia
-      return;
-    }
-
-    this._toastr.info('Iniciando sesión...', 'Por favor espera'); // Muestra una notificación de espera
-
-    this.authService.login(this.codigo_dni, this.password).subscribe(
-      (response) => {
-        if (response.token) {
-          this.authService.setToken(response.token); // Guarda el token en localStorage
-          this.router.navigate(['/Dashboard']); // Redirige al dashboard
-          this._toastr.success('Sesión iniciada con éxito', 'Bienvenido'); // Muestra una notificación de éxito
-        } else {
-          this.errorMessage = 'Error en la autenticación. Token no recibido.';
-          this._toastr.error(this.errorMessage, 'Error'); // Muestra una notificación de error
-        }
-      },
-      (error) => {
-        console.error('Error en el login', error);
-        this.errorMessage = 'Credenciales incorrectas o problema con el servidor.';
-        this._toastr.error(this.errorMessage, 'Error de autenticación'); // Muestra una notificación de error
-      }
-    );
+login() {
+  if (!this.codigo_dni || !this.password) {
+    this.errorMessage = 'Por favor, ingresa todos los campos.';
+    this._toastr.warning(this.errorMessage, 'Advertencia');
+    return;
   }
+
+  this._toastr.info('Iniciando sesión...', 'Por favor espera');
+
+  this.authService.login(this.codigo_dni, this.password).subscribe({
+    next: (response) => {
+      if (response.token) {
+        this.authService.setToken(response.token);
+
+        // 🚀 Todos entran al Dashboard
+        this.router.navigate(['/Dashboard']);
+        this._toastr.success('Sesión iniciada con éxito', 'Bienvenido');
+
+        // 👇 Si quieres guardar el rol aunque no decida la ruta
+        this.usuarioService.obtenerRol().subscribe({
+          next: (rolResponse) => {
+            console.log('Rol del usuario:', rolResponse.rol);
+            this.userStateService.setRolUsuario(rolResponse.rol); // ← Usar el servicio
+          },
+          error: (err) => {
+            console.error('Error al obtener rol', err);
+          }
+        });
+
+      } else {
+        this.errorMessage = 'Error en la autenticación. Token no recibido.';
+        this._toastr.error(this.errorMessage, 'Error');
+      }
+    },
+    error: (error) => {
+      console.error('Error en el login', error);
+      this.errorMessage = 'Credenciales incorrectas o problema con el servidor.';
+      this._toastr.error(this.errorMessage, 'Error de autenticación');
+    }
+  });
+}
+
 }
