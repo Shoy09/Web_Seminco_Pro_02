@@ -18,6 +18,7 @@ import { ExplosivosGraficosComponent } from './Components/Dashboard/Explosivos/e
 import { CheckListListaComponent } from './Components/check list/check-list-lista/check-list-lista.component';
 import { ListPdfComponent } from './Components/pdf/list-pdf/list-pdf.component';
 import { SemanaListComponent } from './Components/prueba/semana-list/semana-list.component';
+import { PowerBiPublicComponent } from './Components/Dashboard/Pu-PowerBi/power-bi-public/power-bi-public.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -39,6 +40,7 @@ export const routes: Routes = [
       { path: 'taladro-largo-grafico', component: TaladroLargoGraficaComponent },
       { path: 'taladro-horizontal-grafico', component: TaladroHorizontalGraficaComponent },
       { path: 'sostenimiento', component: SostenimientoGraficosComponent },
+      { path: 'power-bi', component: PowerBiPublicComponent },
       { path: 'metas', component: MetasComponent },
       { path: 'explosivos-graficos', component: ExplosivosGraficosComponent },
       { path: 'checklist', component: CheckListListaComponent },

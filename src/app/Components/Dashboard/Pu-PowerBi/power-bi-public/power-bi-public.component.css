@@ -1,0 +1,11 @@
+.report-container {
+  width: 100%;
+  height: calc(100vh - 60px); /* 60px es la altura de tu header/menu superior */
+  display: flex;
+}
+
+.report-container iframe {
+  border: none;
+  width: 100%;
+  height: 100%;
+}

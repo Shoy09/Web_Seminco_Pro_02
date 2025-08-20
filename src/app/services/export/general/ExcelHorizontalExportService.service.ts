@@ -111,7 +111,7 @@ const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
           'Perf. Horizontal - Veta': '',
           'Perf. Horizontal - Nivel': '',
           'Perf. Horizontal - Tipo Perforación': '',
-          'Perf. - Observación': '',
+          'Perf. Horizontal - Observación': '',
           'Ejecutado - Código Actividad': '',
           'Ejecutado - Nivel': '',
           'Ejecutado - Labor': '',

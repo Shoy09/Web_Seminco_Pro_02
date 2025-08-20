@@ -170,7 +170,6 @@ private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
     } else {
       data.push({
         'ID Operación': op.id,
-        'Fecha_Mina': fechaMina,
         'Mensaje': 'No hay estados registrados para esta operación'
       });
     }
