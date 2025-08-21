@@ -34,7 +34,7 @@ export class SumaMetrosPerforadosComponent implements OnChanges {
   @Input() metas: Meta[] = [];
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
-  
+
   // Datos públicos para la vista
   public sumaMetros: number = 0;
   public totalTaladros: number = 0;
@@ -118,10 +118,10 @@ export class SumaMetrosPerforadosComponent implements OnChanges {
     this.sumaMetros = this.calcularSumaMetros();
     this.totalTaladros = this.calcularTotalTaladros();
     this.meta = this.obtenerMeta();
-    
+
     // Calcular porcentaje de cumplimiento
-    this.porcentajeCumplimiento = this.meta > 0 
-      ? (this.sumaMetros / this.meta) * 100 
+    this.porcentajeCumplimiento = this.meta > 0
+      ? (this.sumaMetros / this.meta) * 100
       : 0;
 
     // Configurar el gráfico
@@ -148,18 +148,16 @@ export class SumaMetrosPerforadosComponent implements OnChanges {
 
   private calcularSumaMetros(): number {
     if (!this.datos) return 0;
-    
+
     return this.datos.reduce((total, item) => {
-      const ntaladro = Number(item.ntaladro) || 0;
-      const ntaladrosRimados = Number(item.ntaladros_rimados) || 0;
-      const longitud = Number(item.longitud_perforacion) || 0;
-      return total + ((ntaladro + ntaladrosRimados) * longitud);
+      const metros_perforados = Number(item.metros_perforados) || 0;
+      return total + metros_perforados;
     }, 0);
   }
 
   private calcularTotalTaladros(): number {
     if (!this.datos) return 0;
-    
+
     return this.datos.reduce((total, item) => {
       const ntaladro = Number(item.ntaladro) || 0;
       const ntaladrosRimados = Number(item.ntaladros_rimados) || 0;

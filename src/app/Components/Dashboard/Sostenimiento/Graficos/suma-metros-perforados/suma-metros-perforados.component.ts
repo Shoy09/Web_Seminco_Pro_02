@@ -19,7 +19,7 @@ export type ChartOptions = {
   plotOptions: ApexPlotOptions;
   fill: ApexFill;
   responsive: ApexResponsive[];
-  legend: ApexLegend; 
+  legend: ApexLegend;
   colors: string[];
 };
 
@@ -31,7 +31,7 @@ export type ChartOptions = {
 })
 export class SumaMetrosPerforadosComponent implements OnChanges {
   @Input() datos: any[] = [];
-  @Input() metas: Meta[] = []; 
+  @Input() metas: Meta[] = [];
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions: Partial<ChartOptions>;
   public sumaMetros: number = 0;
@@ -114,10 +114,10 @@ export class SumaMetrosPerforadosComponent implements OnChanges {
   private updateChart(): void {
     this.sumaMetros = this.calcularSumaMetros();
     this.meta = this.obtenerMeta();
-    
+
     // Calcular porcentaje de cumplimiento
-    this.porcentajeCumplimiento = this.meta > 0 
-      ? (this.sumaMetros / this.meta) * 100 
+    this.porcentajeCumplimiento = this.meta > 0
+      ? (this.sumaMetros / this.meta) * 100
       : 0;
 
     // Determinar color basado en el porcentaje de cumplimiento
@@ -144,11 +144,10 @@ export class SumaMetrosPerforadosComponent implements OnChanges {
 
   private calcularSumaMetros(): number {
     if (!this.datos) return 0;
-    
+
     return this.datos.reduce((total, item) => {
-      const ntaladro = Number(item.ntaladro) || 0;
-      const longitud = Number(item.longitud_perforacion) || 0;
-      return total + (ntaladro * longitud);
+const metros_perforados = Number(item.metros_perforados) || 0;
+      return total + metros_perforados;
     }, 0);
   }
 
