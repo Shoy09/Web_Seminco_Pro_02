@@ -111,7 +111,7 @@ const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
           'Perf. Horizontal - Veta': '',
           'Perf. Horizontal - Nivel': '',
           'Perf. Horizontal - Tipo Perforación': '',
-          'Perf. Horizontal - Observación': '',
+          'Perf. - Observación': '',
           'Ejecutado - Código Actividad': '',
           'Ejecutado - Nivel': '',
           'Ejecutado - Labor': '',
@@ -122,7 +122,8 @@ const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
           'Ejecutado - N° Taladros Rimados': '',
           'Ejecutado - Longitud': '',
           'Ejecutado - Detalles': '',
-          'Ejecutado - Metros perforados': 0 , // Nueva columna
+          'Ejecutado - Metros perforados': 0 ,
+          'Perf. Horizontal - Observación': '',
           'Fecha_Mina': fechaMina,
         };
 
