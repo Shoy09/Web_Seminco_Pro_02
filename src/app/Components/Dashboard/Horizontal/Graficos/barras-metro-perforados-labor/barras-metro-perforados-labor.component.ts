@@ -37,9 +37,9 @@ export type ChartOptions = {
   templateUrl: './barras-metro-perforados-labor.component.html',
   styleUrl: './barras-metro-perforados-labor.component.css'
 })
-export class BarrasMetroPerforadosLaborComponent implements OnChanges { 
+export class BarrasMetroPerforadosLaborComponent implements OnChanges {
   @Input() datos: any[] = [];
-  @Input() metas: Meta[] = []; 
+  @Input() metas: Meta[] = [];
 
   @ViewChild("chart") chart!: ChartComponent;
   public chartOptions: ChartOptions;
@@ -117,8 +117,8 @@ export class BarrasMetroPerforadosLaborComponent implements OnChanges {
         intersect: false,
         y: {
           formatter: (val: number, { seriesIndex }) => {
-            return seriesIndex === 0 
-              ? `${val.toFixed(1)} metros` 
+            return seriesIndex === 0
+              ? `${val.toFixed(1)} metros`
               : `${val.toFixed(1)} metros`;
           }
         }
@@ -138,9 +138,9 @@ export class BarrasMetroPerforadosLaborComponent implements OnChanges {
       console.warn('No hay datos para mostrar');
       return;
     }
-    
+
     const processedData = this.processData(this.datos);
-    
+
     this.chartOptions = {
       ...this.chartOptions,
       series: processedData.series,
@@ -155,7 +155,7 @@ export class BarrasMetroPerforadosLaborComponent implements OnChanges {
         }
       }
     };
-    
+
     setTimeout(() => {
       if (this.chart && this.chart.updateSeries) {
         this.chart.updateSeries(processedData.series);
@@ -168,15 +168,11 @@ export class BarrasMetroPerforadosLaborComponent implements OnChanges {
 
     data.forEach(item => {
       const labor = `${item.tipo_labor}-${item.labor}`;
-      const ntaladro = Number(item.ntaladro) || 0;
-      const ntaladrosRimados = Number(item.ntaladros_rimados) || 0;
-      const longitud = Number(item.longitud_perforacion) || 0;
+      const metrosPerforados = Number(item.metros_perforados) || 0;
 
-      const resultado = (ntaladro + ntaladrosRimados) * longitud;
+          const valorActual = laborsMap.get(labor) || {real: 0, meta: 0};
+          valorActual.real += metrosPerforados;
 
-      const valorActual = laborsMap.get(labor) || {real: 0, meta: 0};
-      valorActual.real += resultado;
-      
       // Buscar la meta correspondiente usando el nombre de la labor
       const metaLabor = this.metas.find(m => m.nombre === labor);
       valorActual.meta = metaLabor ? metaLabor.objetivo : 0; // Meta será 0 si no está definida

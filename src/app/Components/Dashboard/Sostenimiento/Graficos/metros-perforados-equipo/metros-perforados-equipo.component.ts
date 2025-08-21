@@ -38,7 +38,7 @@ export type ChartOptions = {
   templateUrl: './metros-perforados-equipo.component.html',
   styleUrl: './metros-perforados-equipo.component.css'
 })
-export class MetrosPerforadosEquipoComponent implements OnChanges { 
+export class MetrosPerforadosEquipoComponent implements OnChanges {
   @Input() datos: any[] = [];
   @Input() metas: Meta[] = [];
   @ViewChild("chart") chart!: ChartComponent;
@@ -131,7 +131,7 @@ export class MetrosPerforadosEquipoComponent implements OnChanges {
 
   private updateChart(): void {
     if (!this.datos || this.datos.length === 0) return;
-    
+
     const processedData = this.processData(this.datos);
     this.chartOptions = {
       ...this.chartOptions,
@@ -144,20 +144,18 @@ export class MetrosPerforadosEquipoComponent implements OnChanges {
 
     if (this.chart) {
       setTimeout(() => this.chart.updateSeries(processedData.series), 100);
-    } 
+    }
   }
 
   private processData(data: any[]): { series: any[], categories: string[] } {
     const codigosMap = new Map<string, { real: number, meta: number }>();
 
     data.forEach(item => {
-      const codigo = item.codigo;
-      const ntaladro = Number(item.ntaladro) || 0;
-      const longitud = Number(item.longitud_perforacion) || 0;
-      const resultado = ntaladro * longitud;
+     const codigo = item.codigo;
+         const metrosPerforados = Number(item.metros_perforados) || 0; // 🔹 usar lo nuevo
 
-      const valorActual = codigosMap.get(codigo) || { real: 0, meta: 0 };
-      valorActual.real += resultado;
+         const valorActual = codigosMap.get(codigo) || { real: 0, meta: 0 };
+         valorActual.real += metrosPerforados;
 
       // Buscar la meta correspondiente (usando el nombre/código del equipo)
       const metaEquipo = this.metas.find(m => m.nombre === codigo);

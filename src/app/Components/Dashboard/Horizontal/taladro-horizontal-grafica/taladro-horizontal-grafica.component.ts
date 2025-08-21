@@ -36,7 +36,7 @@ import { ToastrService } from 'ngx-toastr';
   imports: [FormsModule, GraficoBarrasComponent, CommonModule, GraficoBarrasAgrupadaComponent, PromNumTaladroTipoLaborComponent, PromMetrosPerforadosSeccionComponent, GraficoHorometrosComponent, GraficoBarrasMetrosLaborComponent, GraficoBarrasAgrupadaNumLaborComponent, GraficoEstadosComponent, PromedioTaladrosComponent, BarrasMetroPerforadosLaborComponent, PromedioDeEstadosGeneralComponent, RendimientoDePerforacionesComponent, DisponibilidadMecanicaEquipoComponent, DisponibilidadMecanicaGeneralComponent, UtilizacionEquipoComponent, UtilizacionGeneralComponent, SumaMetrosPerforadosComponent, RendimientoPromedioComponent],
   templateUrl: './taladro-horizontal-grafica.component.html',
   styleUrl: './taladro-horizontal-grafica.component.css'
-}) 
+})
 export class TaladroHorizontalGraficaComponent implements OnInit {
   datosOperaciones: NubeOperacion[] = [];
   datosOperacionesExport: NubeOperacion[] = [];
@@ -50,15 +50,12 @@ export class TaladroHorizontalGraficaComponent implements OnInit {
   datosHorometros: any[] = [];
   datosGraficoEstados: any[] = [];
   datosOperacionesOriginal: NubeOperacion[] = [];
-  
-  fechaDesde: string = '';
-fechaHasta: string = '';
-turnoSeleccionado: string = '';
-turnos: string[] = ['DÍA', 'NOCHE'];
+
+
 
   private todasLasMetas: Meta[] = [];
-  metasPorGrafico: { 
-    [key: string]: Meta[] 
+  metasPorGrafico: {
+    [key: string]: Meta[]
   } = {
     'METROS PERFORADOS - EQUIPO': [],
     'METROS PERFORADOS - LABOR': [],
@@ -74,13 +71,16 @@ turnos: string[] = ['DÍA', 'NOCHE'];
     'RENDIMIENTO DE PERFORACION - EQUIPO': [],
     'DISPONIBILIDAD MECANICA - EQUIPO': [],
     'DISPONIBILIDAD MECANICA - GENERAL': [],
-    'UTILIZACION - EQUIPO': [], 
+    'UTILIZACION - EQUIPO': [],
     'UTILIZACION - GENERAL': [],
     'SUMA DE METROS PERFORADOS': [],
     'PROMEDIO DE RENDIMIENTO': []
   };
-  
 
+  fechaDesde: string = '';
+fechaHasta: string = '';
+turnoSeleccionado: string = '';
+turnos: string[] = ['DÍA', 'NOCHE'];
 
   constructor(private _toastr: ToastrService, private metaService: MetaService, private operacionService: OperacionService,private excelHorizontalExportService: ExcelHorizontalExportService, private excelHorizontalExportServicefiltro: ExcelHorizontalExportServiceFiltro) {}
 
@@ -89,7 +89,7 @@ turnos: string[] = ['DÍA', 'NOCHE'];
     this.fechaDesde = fechaISO;
     this.fechaHasta = fechaISO;
     this.turnoSeleccionado = this.obtenerTurnoActual();
-  
+
     this.obtenerDatos();
     this.cargarMetasDesdeApi();
   }
@@ -99,14 +99,14 @@ turnos: string[] = ['DÍA', 'NOCHE'];
       next: (metas: Meta[]) => {
         if (metas && metas.length > 0) {
           this.todasLasMetas = metas;
-  
+
           // Filtrar y agrupar las metas según el campo "grafico"
           metas.forEach(meta => {
             if (this.metasPorGrafico[meta.grafico]) {
               this.metasPorGrafico[meta.grafico].push(meta);
             }
           });
-  
+
           // Mostrar en consola las metas por gráfico
         } else {
         }
@@ -115,24 +115,24 @@ turnos: string[] = ['DÍA', 'NOCHE'];
       }
     });
   }
-  
+
 private obtenerMesDeFecha(fecha: string): string {
   if (!fecha) return '';
-  
+
   const meses = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
-  
+
   // Dividir la fecha y crear el Date objeto en UTC para evitar problemas de zona horaria
   const partes = fecha.split('-');
   const year = parseInt(partes[0], 10);
   const month = parseInt(partes[1], 10) - 1; // Restamos 1 porque los meses en Date son 0-based
   const day = parseInt(partes[2], 10);
-  
+
   // Crear la fecha en UTC
   const date = new Date(Date.UTC(year, month, day));
-  
+
   return meses[date.getUTCMonth()]; // Usamos getUTCMonth() para obtener el mes correcto
 }
 
@@ -140,7 +140,7 @@ private obtenerMesDeFecha(fecha: string): string {
   obtenerTurnoActual(): string {
     const ahora = new Date();
     const hora = ahora.getHours();
-  
+
     // Turno de día: 7:00 AM a 6:59 PM (07:00 - 18:59)
     if (hora >= 7 && hora < 19) {
       return 'DÍA';
@@ -149,27 +149,27 @@ private obtenerMesDeFecha(fecha: string): string {
       return 'NOCHE';
     }
   }
-  
+
   quitarFiltros(): void {
     const fechaISO = this.obtenerFechaLocalISO();
     this.fechaDesde = fechaISO;
     this.fechaHasta = fechaISO;
     this.turnoSeleccionado = this.obtenerTurnoActual();
-  
+
     const filtros = {
       fechaDesde: this.fechaDesde,
       fechaHasta: this.fechaHasta,
       turnoSeleccionado: this.turnoSeleccionado
     };
-  
+
     this.datosOperaciones = this.filtrarDatos(this.datosOperacionesOriginal, filtros);
-    
+
     // Filtrar metas según el mes actual
     this.filtrarMetasPorMes(this.fechaDesde, this.fechaHasta);
-    
+
     this.reprocesarTodosLosGraficos();
   }
-  
+
   obtenerFechaLocalISO(): string {
     const hoy = new Date();
     const año = hoy.getFullYear();
@@ -177,7 +177,7 @@ private obtenerMesDeFecha(fecha: string): string {
     const dia = hoy.getDate().toString().padStart(2, '0');
     return `${año}-${mes}-${dia}`;
   }
-  
+
 
   aplicarFiltrosLocales(): void {
     // Crear objeto con los filtros actuales
@@ -186,16 +186,16 @@ private obtenerMesDeFecha(fecha: string): string {
       fechaHasta: this.fechaHasta,
       turnoSeleccionado: this.turnoSeleccionado
     };
-  
+
     // Aplicar filtros a los datos ORIGINALES (this.datosOperacionesOriginal)
     const datosFiltrados = this.filtrarDatos(this.datosOperacionesOriginal, filtros);
-  
+
     // Actualizar los datos filtrados
     this.datosOperaciones = datosFiltrados;
-  
+
     // Filtrar metas según el mes de la fecha de inicio
     this.filtrarMetasPorMes(this.fechaDesde, this.fechaHasta) ;
-  
+
     // Reprocesar los gráficos con los datos filtrados
     this.reprocesarTodosLosGraficos();
   }
@@ -213,7 +213,7 @@ private obtenerMesDeFecha(fecha: string): string {
   this.todasLasMetas.forEach(meta => {
     if (meta.mes === mesSeleccionado && this.metasPorGrafico[meta.grafico]) {
       const metaClonada = { ...meta };
-      
+
       // Cálculo final: objetivo * cantidad de días * multiplicador de turno
       metaClonada.objetivo = meta.objetivo * cantidadDias * multiplicadorTurno;
 
@@ -230,32 +230,32 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
   return diffDays;
 }
 
-  
+
   filtrarDatos(datos: NubeOperacion[], filtros: any): NubeOperacion[] {
     return datos.filter(operacion => {
       const fechaOperacion = new Date(operacion.fecha);
       const fechaDesde = filtros.fechaDesde ? new Date(filtros.fechaDesde) : null;
       const fechaHasta = filtros.fechaHasta ? new Date(filtros.fechaHasta) : null;
-  
+
       // Verificar si la fecha de operación está dentro del rango
       if (fechaDesde && fechaOperacion < fechaDesde) {
         return false;
       }
-  
+
       if (fechaHasta && fechaOperacion > fechaHasta) {
         return false;
       }
-  
+
       // Verificar si el turno de la operación coincide con el turno seleccionado
       if (filtros.turnoSeleccionado && operacion.turno !== filtros.turnoSeleccionado) {
         return false;
       }
-  
+
       return true;
     });
   }
-  
-  
+
+
   reprocesarTodosLosGraficos(): void {
     this.prepararDatosGraficoBarrasApilada();
     this.prepararDatosGraficoBarrasAgrupada();
@@ -267,22 +267,22 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
     this.prepararDatosGraficoEstados();
     this.prepararDatoRendimientoPerforacion();
   }
- 
+
   obtenerDatos(): void {
     this.operacionService.getOperacionesHorizontal().subscribe({
       next: (data) => {
         this.datosOperacionesOriginal = data;
         this.datosOperacionesExport = data;
-  
+
         // Aplicar filtros por fecha actual y turno automáticamente
         const filtros = {
           fechaDesde: this.fechaDesde,
           fechaHasta: this.fechaHasta,
           turnoSeleccionado: this.turnoSeleccionado
         };
-  
+
         this.datosOperaciones = this.filtrarDatos(this.datosOperacionesOriginal, filtros);
-  
+
         // Procesar datos para los gráficos
         this.prepararDatosGraficoBarrasApilada();
         this.prepararDatosGraficoBarrasAgrupada();
@@ -309,6 +309,7 @@ prepararDatosGraficoBarrasApilada(): void {
     return operacion.estados?.flatMap(estado => {
       return estado.perforaciones_horizontal?.flatMap(perforacion => {
         return perforacion.inter_perforaciones_horizontal?.map(inter => ({
+          metros_perforados:inter.metros_perforados,
           equipo: operacion.equipo,
           codigo: operacion.codigo,
           longitud_perforacion: inter.longitud_perforacion,
@@ -324,11 +325,12 @@ prepararDatosGraficoBarrasApilada(): void {
 
 
 prepararDatosGraficoBarrasAgrupada(): void {
-  this.datosGraficobarrasagrupadas = this.datosOperaciones.flatMap(operacion => 
-    operacion.estados?.flatMap(estado => 
-      estado.perforaciones_horizontal?.flatMap(perforacion => 
+  this.datosGraficobarrasagrupadas = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.perforaciones_horizontal?.flatMap(perforacion =>
         perforacion.inter_perforaciones_horizontal?.map(inter => ({
           equipo: operacion.equipo,
+          metros_perforados:inter.metros_perforados,
           codigo: operacion.codigo,
           tipo_labor: perforacion.tipo_labor,
           labor: perforacion.labor,
@@ -341,9 +343,9 @@ prepararDatosGraficoBarrasAgrupada(): void {
 }
 
 prepararDatosParaPromediostaladrosSeccion(): void {
-  this.paraPromedioTaladrosSeccion = this.datosOperaciones.flatMap(operacion => 
-    operacion.estados?.flatMap(estado => 
-      estado.perforaciones_horizontal?.flatMap(perforacion => 
+  this.paraPromedioTaladrosSeccion = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.perforaciones_horizontal?.flatMap(perforacion =>
         perforacion.inter_perforaciones_horizontal?.map(inter => ({
           seccion_la_labor: inter.seccion_la_labor,
           ntaladro: inter.ntaladro || 0,
@@ -353,11 +355,11 @@ prepararDatosParaPromediostaladrosSeccion(): void {
     ) || []
   );
 }
- 
+
 prepararDatosParaPromnumtaladrotipolabor(): void {
-  this.ParaPromediosPromnumtaladrotipolabor = this.datosOperaciones.flatMap(operacion => 
-    operacion.estados?.flatMap(estado => 
-      estado.perforaciones_horizontal?.flatMap(perforacion => 
+  this.ParaPromediosPromnumtaladrotipolabor = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.perforaciones_horizontal?.flatMap(perforacion =>
         perforacion.inter_perforaciones_horizontal?.map(inter => ({
           ntaladro: inter.ntaladro || 0,
           ntaladros_rimados: inter.ntaladros_rimados || 0,
@@ -370,24 +372,27 @@ prepararDatosParaPromnumtaladrotipolabor(): void {
 }
 
 prepararDatosParaPromediostaladrosmetrosperforadosSeccion(): void {
-  this.ParaPromediostaladrosmetrosperforadosSeccion = this.datosOperaciones.flatMap(operacion => 
-    operacion.estados?.flatMap(estado => 
-      estado.perforaciones_horizontal?.flatMap(perforacion => 
+  this.ParaPromediostaladrosmetrosperforadosSeccion = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.perforaciones_horizontal?.flatMap(perforacion =>
         perforacion.inter_perforaciones_horizontal?.map(inter => ({
           seccion_la_labor: inter.seccion_la_labor,
           longitud_perforacion: inter.longitud_perforacion,
+          metros_perforados:inter.metros_perforados,
           ntaladro: inter.ntaladro,
           ntaladros_rimados: inter.ntaladros_rimados,
         })) || []
       ) || []
     ) || []
   );
+
+console.log("Datos preparados para la gráfica:", this.ParaPromediostaladrosmetrosperforadosSeccion);
 }
 
 prepararDatosParaPromediostaladrosSecciónnumtaladroSeccion(): void {
-  this.ParaPromediostaladrosnumtaladroSeccion = this.datosOperaciones.flatMap(operacion => 
-    operacion.estados?.flatMap(estado => 
-      estado.perforaciones_horizontal?.flatMap(perforacion => 
+  this.ParaPromediostaladrosnumtaladroSeccion = this.datosOperaciones.flatMap(operacion =>
+    operacion.estados?.flatMap(estado =>
+      estado.perforaciones_horizontal?.flatMap(perforacion =>
         perforacion.inter_perforaciones_horizontal?.map(inter => ({
           seccion_la_labor: inter.seccion_la_labor,
           ntaladro: inter.ntaladro || 0,
@@ -398,7 +403,7 @@ prepararDatosParaPromediostaladrosSecciónnumtaladroSeccion(): void {
 }
 
 prepararDatosHorometros(): void {
-  this.datosHorometros = this.datosOperaciones.flatMap(operacion => 
+  this.datosHorometros = this.datosOperaciones.flatMap(operacion =>
     operacion.horometros?.map(horometro => ({
       operacionId: operacion.id,
       equipo: operacion.equipo,
@@ -416,7 +421,7 @@ prepararDatosHorometros(): void {
 }
 
 prepararDatosGraficoEstados(): void {
-  this.datosGraficoEstados = this.datosOperaciones.flatMap(operacion => 
+  this.datosGraficoEstados = this.datosOperaciones.flatMap(operacion =>
     operacion.estados?.map(estado => ({
       codigoOperacion: operacion.codigo,
       turno: operacion.turno,
@@ -426,7 +431,7 @@ prepararDatosGraficoEstados(): void {
       hora_final: estado.hora_final
     })) || []
   );
-} 
+}
 
 prepararDatoRendimientoPerforacion(): void {
   const agrupadoPorOperacion = new Map<string, {
@@ -500,10 +505,10 @@ exportarAExcelConHojasSeparadas(): void {
     const sheetName = `Op-${operacion.id}`.substring(0, 31);
     const datosHoja = this.prepararDatosPorOperacion(operacion);
     const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(datosHoja);
-    
+
     // Aplicar estilos a la hoja
     this.aplicarEstilosAhoja(ws, datosHoja);
-    
+
     XLSX.utils.book_append_sheet(wb, ws, sheetName);
   });
 
@@ -549,7 +554,7 @@ aplicarEstilosAhoja(ws: XLSX.WorkSheet, datosHoja: any[][]): void {
 datosHoja.forEach((row, rowIndex) => {
     row.forEach((cell, colIndex) => {
       const cellRef = XLSX.utils.encode_cell({ r: rowIndex, c: colIndex });
-      
+
       // Estilo para títulos principales
       if (typeof cell === 'string' && cell.toUpperCase() === cell && cell.includes('INFORMACIÓN')) {
         ws[cellRef].s = estiloTituloPrincipal;
@@ -557,15 +562,15 @@ datosHoja.forEach((row, rowIndex) => {
         ws['!merges'].push({ s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 8 } });
       }
       // Estilo para subtítulos (HORÓMETROS, ESTADOS, etc.)
-      else if (typeof cell === 'string' && cell.toUpperCase() === cell && 
-              (cell.includes('HORÓMETROS') || cell.includes('ESTADOS') || 
+      else if (typeof cell === 'string' && cell.toUpperCase() === cell &&
+              (cell.includes('HORÓMETROS') || cell.includes('ESTADOS') ||
                cell.includes('PERFORACIONES'))) {
         ws[cellRef].s = estiloSubtitulo;
         if (!ws['!merges']) ws['!merges'] = [];
         ws['!merges'].push({ s: { r: rowIndex, c: 0 }, e: { r: rowIndex, c: 8 } });
       }
       // Estilo para encabezados de tabla - VERSIÓN CORREGIDA
-      else if (rowIndex > 0 && datosHoja[rowIndex-1] && datosHoja[rowIndex-1][0] && 
+      else if (rowIndex > 0 && datosHoja[rowIndex-1] && datosHoja[rowIndex-1][0] &&
               typeof datosHoja[rowIndex-1][0] === 'string') {
         const cellValue = datosHoja[rowIndex-1][0].toString().toUpperCase();
         if (cellValue.includes('HORÓMETROS') || cellValue.includes('ESTADOS') || cellValue.includes('DETALLES')) {
@@ -573,7 +578,7 @@ datosHoja.forEach((row, rowIndex) => {
         }
       }
       // Estilo para datos de tabla - VERSIÓN CORREGIDA
-      else if (rowIndex > 1 && datosHoja[rowIndex-2] && datosHoja[rowIndex-2][0] && 
+      else if (rowIndex > 1 && datosHoja[rowIndex-2] && datosHoja[rowIndex-2][0] &&
               typeof datosHoja[rowIndex-2][0] === 'string') {
         const cellValue = datosHoja[rowIndex-2][0].toString().toUpperCase();
         if (cellValue.includes('HORÓMETROS') || cellValue.includes('ESTADOS') || cellValue.includes('DETALLES')) {
@@ -587,13 +592,13 @@ datosHoja.forEach((row, rowIndex) => {
   const colWidths = datosHoja[0].map((_, colIndex) => {
     return {
       wch: Math.max(
-        ...datosHoja.map(row => 
+        ...datosHoja.map(row =>
           row[colIndex] ? row[colIndex].toString().length + 2 : 10
         )
       )
     };
   });
-  
+
   ws['!cols'] = colWidths;
 }
 
@@ -617,7 +622,7 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
   if (operacion.horometros && operacion.horometros.length > 0) {
     datosHoja.push(['HORÓMETROS']);
     datosHoja.push(['Nombre', 'Inicial', 'Final', 'OP', 'INOP']);
-    
+
     operacion.horometros.forEach(horometro => {
       datosHoja.push([
         horometro.nombre,
@@ -633,7 +638,7 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
   // 3. Sección de Estados (actualizada para incluir perforaciones)
   if (operacion.estados && operacion.estados.length > 0) {
     datosHoja.push(['ESTADOS Y PERFORACIONES']);
-    
+
     operacion.estados.forEach((estado, estadoIndex) => {
       // Información del estado
       datosHoja.push([`ESTADO ${estadoIndex + 1}`]);
@@ -642,12 +647,12 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
       datosHoja.push(['Código', estado.codigo]);
       datosHoja.push(['Hora Inicio', estado.hora_inicio]);
       datosHoja.push(['Hora Final', estado.hora_final]);
-      
+
       // Sección de Perforaciones Horizontales para este estado
       if (estado.perforaciones_horizontal && estado.perforaciones_horizontal.length > 0) {
         datosHoja.push([""]);
         datosHoja.push(['PERFORACIONES HORIZONTALES PARA ESTE ESTADO']);
-        
+
         estado.perforaciones_horizontal.forEach((perf, perfIndex) => {
           datosHoja.push([`PERFORACIÓN ${perfIndex + 1}`]);
           datosHoja.push(['Zona', perf.zona]);
@@ -656,16 +661,16 @@ prepararDatosPorOperacion(operacion: NubeOperacion): any[][] {
           datosHoja.push(['Veta', perf.veta]);
           datosHoja.push(['Nivel', perf.nivel]);
           datosHoja.push(['Tipo Perforación', perf.tipo_perforacion]);
-          
+
           if (perf.inter_perforaciones_horizontal && perf.inter_perforaciones_horizontal.length > 0) {
             datosHoja.push([""]);
             datosHoja.push(['DETALLES DE PERFORACIÓN']);
             datosHoja.push([
-              'Código Actividad', 'Nivel', 'Labor', 'Sección', 
-              'N° Broca', 'N° Taladro', 'Taladros Rimados', 
+              'Código Actividad', 'Nivel', 'Labor', 'Sección',
+              'N° Broca', 'N° Taladro', 'Taladros Rimados',
               'Longitud Perforación', 'Detalles Trabajo'
             ]);
-            
+
             perf.inter_perforaciones_horizontal.forEach(inter => {
               datosHoja.push([
                 inter.codigo_actividad,
@@ -836,10 +841,10 @@ prepararDatosParaExcel(datosOperaciones: NubeOperacion[]): any[] {
 exportarAExcel(): void {
   // Preparar los datos
   const datosParaExcel = this.prepararDatosParaExcel(this.datosOperacionesExport);
-  
+
   // Crear hoja de trabajo
   const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
-  
+
   // Ajustar el ancho de las columnas
   const wscols = [
     {wch: 10}, // ID Operación
@@ -935,13 +940,13 @@ exportarAExcel(): void {
     for (let C = range.s.c; C <= range.e.c; ++C) {
       const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
       if (!ws[cellAddress]) continue;
-      
+
       // Estilo base para datos
       ws[cellAddress].s = dataStyle;
-      
+
       // Formato condicional por tipo de dato
       const tipoDato = ws['J' + (R + 1)]?.v; // Columna J es 'Tipo Dato'
-      
+
       if (tipoDato === 'HORÓMETRO') {
         ws[cellAddress].s.fill = { patternType: 'solid', fgColor: { rgb: 'E2EFDA' } }; // Verde claro
       } else if (tipoDato === 'ESTADO') {
@@ -951,13 +956,13 @@ exportarAExcel(): void {
       } else if (tipoDato === 'PERFORACIÓN HORIZONTAL') {
         ws[cellAddress].s.fill = { patternType: 'solid', fgColor: { rgb: 'F8CBAD' } }; // Naranja claro
       }
-      
+
       // Formato para números
       if (typeof ws[cellAddress].v === 'number') {
         ws[cellAddress].s.numFmt = '0.00';
         ws[cellAddress].s.alignment = { horizontal: 'right' };
       }
-      
+
       // Formato para fechas
       if (cellAddress.includes('Fecha') || cellAddress.includes('Hora')) {
         ws[cellAddress].s.numFmt = 'dd/mm/yyyy hh:mm';
@@ -974,7 +979,7 @@ exportarAExcel(): void {
   // Crear libro de trabajo
   const wb: XLSX.WorkBook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'datosOperacionesExport');
-  
+
   // Exportar el archivo
   const fechaHoy = new Date().toISOString().split('T')[0];
   XLSX.writeFile(wb, `Operaciones_taladro_horizontal_${fechaHoy}.xlsx`, { compression: true });
@@ -982,14 +987,14 @@ exportarAExcel(): void {
 
 exportToExcelHorizontal() {
   this.excelHorizontalExportService.exportOperacionesToExcel(
-    this.datosOperacionesExport, 
+    this.datosOperacionesExport,
     'Reporte_Operaciones'
   );
 }
 
 exportToExcelHorizontalfiltro() {
   this.excelHorizontalExportServicefiltro.exportOperacionesToExcel(
-    this.datosOperaciones, 
+    this.datosOperaciones,
     'Reporte_Operaciones'
   );
 }

@@ -35,9 +35,9 @@ export type ChartOptions = {
   selector: 'app-metros-perforados-labor',
   imports: [CommonModule, NgApexchartsModule],
   templateUrl: './metros-perforados-labor.component.html',
-  styleUrl: './metros-perforados-labor.component.css' 
+  styleUrl: './metros-perforados-labor.component.css'
 })
-export class MetrosPerforadosLaborComponent implements OnChanges { 
+export class MetrosPerforadosLaborComponent implements OnChanges {
   @Input() datos: any[] = [];
   @Input() metas: Meta[] = [];
   @ViewChild("chart") chart!: ChartComponent;
@@ -134,9 +134,9 @@ export class MetrosPerforadosLaborComponent implements OnChanges {
       console.warn('No hay datos para mostrar');
       return;
     }
-    
+
     const processedData = this.processData(this.datos);
-    
+
     this.chartOptions = {
       ...this.chartOptions,
       series: processedData.series,
@@ -145,7 +145,7 @@ export class MetrosPerforadosLaborComponent implements OnChanges {
         categories: processedData.categories
       }
     };
-    
+
     setTimeout(() => {
       if (this.chart && this.chart.updateSeries) {
         this.chart.updateSeries(processedData.series);
@@ -159,14 +159,10 @@ export class MetrosPerforadosLaborComponent implements OnChanges {
 
     data.forEach(item => {
       const labor = `${item.tipo_labor}-${item.labor}`;
-      const ntaladro = Number(item.ntaladro) || 0;
-      const ntaladrosRimados = Number(item.ntaladros_rimados) || 0;
-      const longitud = Number(item.longitud_perforacion) || 0;
+      const metrosPerforados = Number(item.metros_perforados) || 0;
 
-      const resultado = (ntaladro + ntaladrosRimados) * longitud;
-
-      const valorActual = laborsMap.get(labor) || { real: 0, meta: 0 };
-      valorActual.real += resultado;
+          const valorActual = laborsMap.get(labor) || {real: 0, meta: 0};
+          valorActual.real += metrosPerforados;
 
       // Buscar la meta correspondiente (usando el nombre de la labor)
       const metaLabor = this.metas.find(m => m.nombre === labor);

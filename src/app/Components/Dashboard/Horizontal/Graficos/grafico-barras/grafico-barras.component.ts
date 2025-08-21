@@ -32,12 +32,12 @@ export type ChartOptions = {
 
 @Component({
   selector: 'app-grafico-barras',
-  standalone: true, 
+  standalone: true,
   imports: [CommonModule, NgApexchartsModule],
   templateUrl: './grafico-barras.component.html',
   styleUrls: ['./grafico-barras.component.css']
 })
-export class GraficoBarrasComponent implements OnChanges { 
+export class GraficoBarrasComponent implements OnChanges {
   @Input() datos: any[] = [];
   @Input() metas: Meta[] = [];
 
@@ -57,7 +57,7 @@ export class GraficoBarrasComponent implements OnChanges {
       }
     }
   }
-   
+
 
   private getDefaultOptions(): ChartOptions {
     return {
@@ -109,7 +109,7 @@ export class GraficoBarrasComponent implements OnChanges {
         curve: 'smooth'
       },
       colors: ['#3B82F6', '#BF4342'], // Azul para barras, rojo para línea
-      fill: { 
+      fill: {
         opacity: 1,
         colors: ['#3B82F6', '#BF4342']
       },
@@ -138,14 +138,14 @@ export class GraficoBarrasComponent implements OnChanges {
           formatter: (val: number) => val.toFixed(1)
         }
       },
-      
+
       tooltip: {
         shared: true,
         intersect: false,
         y: {
           formatter: (val: number, { seriesIndex }) => {
-            return seriesIndex === 0 
-              ? `${val.toFixed(1)} metros` 
+            return seriesIndex === 0
+              ? `${val.toFixed(1)} metros`
               : `${val.toFixed(1)} metros`;
           }
         }
@@ -166,11 +166,11 @@ export class GraficoBarrasComponent implements OnChanges {
       console.warn('No hay datos para mostrar');
       return;
     }
-    
-    const processedData = this.processData(this.datos);
-    
 
-    
+    const processedData = this.processData(this.datos);
+
+
+
     this.chartOptions = {
       ...this.chartOptions,
       series: processedData.series,
@@ -185,7 +185,7 @@ export class GraficoBarrasComponent implements OnChanges {
         }
       }
     };
-    
+
     // Forzar actualización si es necesario
     setTimeout(() => {
       if (this.chart && this.chart.updateSeries) {
@@ -199,15 +199,11 @@ private processData(data: any[]): { series: any[], categories: string[] } {
 
   data.forEach(item => {
     const codigo = item.codigo;
-    const ntaladro = Number(item.ntaladro) || 0;
-    const ntaladrosRimados = Number(item.ntaladros_rimados) || 0;
-    const longitud = Number(item.longitud_perforacion) || 0;
+    const metrosPerforados = Number(item.metros_perforados) || 0; // 🔹 usar lo nuevo
 
-    const resultado = (ntaladro + ntaladrosRimados) * longitud;
+    const valorActual = codigosMap.get(codigo) || { real: 0, meta: 0 };
+    valorActual.real += metrosPerforados; //
 
-    const valorActual = codigosMap.get(codigo) || {real: 0, meta: 0};
-    valorActual.real += resultado;
-    
     // Buscar la meta correspondiente usando el nombre (que equivale al código)
     const metaEquipo = this.metas.find(m => m.nombre === codigo);
     valorActual.meta = metaEquipo ? metaEquipo.objetivo : 0; // Meta será 0 si no está definida

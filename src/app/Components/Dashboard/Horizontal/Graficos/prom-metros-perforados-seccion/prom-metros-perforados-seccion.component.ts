@@ -104,18 +104,14 @@ export class PromMetrosPerforadosSeccionComponent implements OnInit {
       this.chartOptions.xaxis.categories = [];
       return;
     }
-  
+
     // Agrupar datos por sección con nueva lógica de cálculo
     const seccionMap = new Map<string, { total: number, count: number }>();
-  
+
     this.datos.forEach(item => {
       const seccion = item.seccion_la_labor;
-      const longitud = parseFloat(item.longitud_perforacion) || 0;
-      const ntaladro = parseInt(item.ntaladro) || 0;
-      const rimados = parseInt(item.ntaladros_rimados) || 0;
-  
-      const metrosPerforados = (ntaladro + rimados) * longitud;
-  
+          const metrosPerforados = item.metros_perforados || 0;
+
       if (seccionMap.has(seccion)) {
         const current = seccionMap.get(seccion)!;
         seccionMap.set(seccion, {
@@ -129,17 +125,17 @@ export class PromMetrosPerforadosSeccionComponent implements OnInit {
         });
       }
     });
-  
+
     // Ordenar alfabéticamente por sección
     const sortedEntries = Array.from(seccionMap.entries()).sort((a, b) => {
       return a[0].localeCompare(b[0]);
     });
-  
+
     // Preparar datos para el gráfico
     const categorias: string[] = [];
     const promedios: number[] = [];
     const metasLinea: number[] = [];
-  
+
     sortedEntries.forEach(([key, value]) => {
       categorias.push(key);
       promedios.push(value.total / value.count); // Promedio por sección
@@ -148,7 +144,7 @@ export class PromMetrosPerforadosSeccionComponent implements OnInit {
       const meta = this.metas.find(meta => meta.nombre === key);
       metasLinea.push(meta ? meta.objetivo : 0); // Meta por sección
     });
-  
+
     // Actualizar opciones del gráfico
     this.chartOptions = {
       ...this.chartOptions,
