@@ -41,9 +41,11 @@ export class ExcelHorizontalExportServiceFiltro {
 
 private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
   const data: any[] = [];
-  
+
+  // 👉 Ahora Diesel primero, luego Electrico, luego Percusion
+  const ordenPrioridad = ['Diesel', 'Electrico', 'Percusion'];
+
   operaciones.forEach(op => {
-    // Crear objeto base para la operación
     const rowData: any = {
       'ID Operación': op.id,
       'Turno': op.turno,
@@ -55,39 +57,46 @@ private prepareEjecutadoData(operaciones: NubeOperacion[]): any[] {
       'Estado': op.estado,
     };
 
-    // Procesar horómetros si existen
     if (op.horometros && op.horometros.length > 0) {
-      op.horometros.forEach(horometro => {
-        const nombreNormalizado = horometro.nombre.replace(/\s+/g, '_'); // Normalizar nombre para nombres compuestos
-        
-        // Agregar columnas para cada horómetro (sin el ID)
+      // 👉 Ordenar primero Diesel, Electrico, Percusion y luego los demás
+      const horometrosOrdenados = [...op.horometros].sort((a, b) => {
+        const idxA = ordenPrioridad.indexOf(a.nombre);
+        const idxB = ordenPrioridad.indexOf(b.nombre);
+
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1;
+        if (idxB !== -1) return 1;
+        return a.nombre.localeCompare(b.nombre); // otros alfabéticamente
+      });
+
+      horometrosOrdenados.forEach(horometro => {
+        const nombreNormalizado = horometro.nombre.replace(/\s+/g, '_');
+
         rowData[`Horómetro ${nombreNormalizado} - Inicial`] = horometro.inicial;
         rowData[`Horómetro ${nombreNormalizado} - Final`] = horometro.final;
         rowData[`Diferencia ${nombreNormalizado}`] = horometro.final - horometro.inicial;
-        
-        // Determinar el estado operativo según las reglas
-        const opValue = horometro.EstaOP;
-        const inopValue = horometro.EstaINOP;
+
         let estadoOperativo;
-        
-        if (opValue && !inopValue) {
+        if (horometro.EstaOP && !horometro.EstaINOP) {
           estadoOperativo = 'Sí';
-        } else if (!opValue && inopValue) {
+        } else if (!horometro.EstaOP && horometro.EstaINOP) {
           estadoOperativo = 'No';
         } else {
           estadoOperativo = 'Sin definir';
         }
-        
+
         rowData[`Horómetro ${nombreNormalizado} - Operativo`] = estadoOperativo;
       });
     }
-const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
+
+    const fechaMina = this.calcularFechaMina(op.fecha, op.turno);
     rowData['Fecha_Mina'] = fechaMina;
     data.push(rowData);
   });
-  
+
   return data;
 }
+
 
   private prepareEstadosData(operaciones: NubeOperacion[]): any[] {
   const data: any[] = [];
