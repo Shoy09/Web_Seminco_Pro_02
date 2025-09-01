@@ -9,6 +9,7 @@ import { EquipoService } from '../../../services/equipo.service';
 import { TipoPerforacionService } from '../../../services/tipo-perforacion.service';
 import { LoadingDialogComponent } from '../../Reutilizables/loading-dialog/loading-dialog.component';
 import { ToneladasService } from '../../../services/toneladas.service';
+import { OrigenDestinoService } from '../../../services/origen-destino.service';
 
 
 @Component({
@@ -36,6 +37,7 @@ datoOriginal: any = null;
   constructor(
     private tipoPerforacionService: TipoPerforacionService, 
     private equipoService: EquipoService,
+    private origenDestinoService: OrigenDestinoService,
     private empresaService: EmpresaService,
     private FechasPlanMensualService: FechasPlanMensualService,
     private toneladasService: ToneladasService,
@@ -146,6 +148,27 @@ datoOriginal: any = null;
     { nombre: 'toneladas', label: 'Toneladas', tipo: 'number' }
   ]
 },
+{
+  nombre: 'Origen/Destino',
+  icon: 'mas.svg',
+  tipo: 'OrigenDestino',
+  datos: [],
+  campos: [
+    { 
+      nombre: 'operacion', 
+      label: 'Operación', 
+      tipo: 'text', 
+      valorPorDefecto: 'CARGUÍO'
+    },
+    { 
+      nombre: 'tipo', 
+      label: 'Tipo', 
+      tipo: 'select',
+      opciones: ['Origen', 'Destino']
+    },
+    { nombre: 'nombre', label: 'Nombre', tipo: 'text' }
+  ]
+}
 
     
   ];  
@@ -160,14 +183,6 @@ datoOriginal: any = null;
     const fileInput = document.getElementById('fileInput') as HTMLInputElement;
     fileInput.click();
   }
-  
-  importarExcel() {
-    if (this.modalContenido) {
-      this.cargarExcel(this.modalContenido.nombre);
-    } else {
-      
-    }
-  }
 
   procesarExcelGeneral(event: any) {
   if (!this.modalContenido) {
@@ -181,6 +196,10 @@ datoOriginal: any = null;
 
     case 'Toneladas':
       this.procesarExcelToneladas(event);
+      break;
+
+    case 'OrigenDestino':      // 👈 necesario
+      this.procesarExcelOrigenDestino(event);
       break;
 
     // 🔹 Agrega aquí otros tipos cuando implementes sus funciones
@@ -227,7 +246,16 @@ datoOriginal: any = null;
         },
         error: (err) => console.error('Error al actualizar:', err)
       });
-    }
+    }else if (this.modalContenido.tipo === 'OrigenDestino') {
+  this.origenDestinoService.updateOrigenDestino(id, datosActualizados).subscribe({
+    next: (data) => {
+      this.modalContenido.datos[this.indiceEditando] = data;
+      this.cancelarEdicion();
+    },
+    error: (err) => console.error('Error al actualizar Origen/Destino:', err)
+  });
+}
+
   }
 }
 
@@ -238,20 +266,44 @@ cancelarEdicion() {
   this.datoOriginal = null;
 }
 
+procesarExcelOrigenDestino(event: any) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-  cargarExcel(nombre: string) {
-    
-  
-    if (nombre === 'Tipo de Perforación') {
-      // this.procesarExcelTipoPerforacion();
-    } else if (nombre === 'Equipo') {
-      this.triggerFileInput(); // Activa la selección de archivo
-    } else if (nombre === 'Empresa') {
-      // this.procesarExcelEmpresa();
-    } else {
-      
-    }
-  }
+  const reader = new FileReader();
+  reader.onload = (e: any) => {
+    const data = new Uint8Array(e.target.result);
+    const workbook = XLSX.read(data, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+
+    const excelData: any[] = XLSX.utils.sheet_to_json(sheet, { raw: false });
+
+    const registros = excelData.map(row => ({
+      operacion: row["OPERACION"] || null,
+      tipo: row["TIPO"] || null,
+      nombre: row["NOMBRE"] || null
+    }));
+
+    this.cerrarModal();
+    const dialogRef = this.mostrarPantallaCarga();
+
+    registros.forEach(nuevoRegistro => {
+      this.origenDestinoService.createOrigenDestino(nuevoRegistro).subscribe({
+        next: (data) => {
+          this.modalContenido.datos.push(data);
+        },
+        error: (err) => console.error('Error al guardar Origen/Destino:', err)
+      });
+    });
+
+    this.dialog.closeAll();
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+
   
   procesarExcelEquipo(event: any) {
     const file = event.target.files[0];
@@ -395,6 +447,17 @@ cancelarEdicion() {
   abrirModal(button: any) {
     this.modalAbierto = true;
     this.modalContenido = button;
+
+    this.nuevoDato = {};
+  if (button.campos) {
+    button.campos.forEach((campo: { valorPorDefecto: undefined; nombre: string | number; }) => {
+      if (campo.valorPorDefecto !== undefined) {
+        this.nuevoDato[campo.nombre] = campo.valorPorDefecto;
+      } else {
+        this.nuevoDato[campo.nombre] = ''; // inicializa vacío
+      }
+    });
+  }
   
     if (button.tipo === 'Tipo de Perforación') {
   this.tipoPerforacionService.getTiposPerforacion().subscribe({
@@ -438,7 +501,15 @@ cancelarEdicion() {
     },
     error: (err) => console.error('Error al cargar Toneladas:', err)
   });
+}else if (button.tipo === 'OrigenDestino') {
+  this.origenDestinoService.getOrigenesDestinos().subscribe({
+    next: (data) => {
+      this.modalContenido.datos = data;
+    },
+    error: (err) => console.error('Error al cargar Origen/Destino:', err)
+  });
 }
+
 
   }
 
@@ -495,7 +566,15 @@ cancelarEdicion() {
     },
     error: (err) => console.error('Error al guardar Toneladas:', err)
   });
+}else if (this.modalContenido.tipo === 'OrigenDestino') {
+  this.origenDestinoService.createOrigenDestino(nuevoRegistro).subscribe({
+    next: (data) => {
+      this.modalContenido.datos.push(data);
+    },
+    error: (err) => console.error('Error al guardar Origen/Destino:', err)
+  });
 }
+
 
 
       this.nuevoDato = {};
@@ -544,7 +623,15 @@ cancelarEdicion() {
     },
     error: (err) => console.error('Error al eliminar Tonelada:', err)
   });
+}else if (this.modalContenido.tipo === 'OrigenDestino') {
+  this.origenDestinoService.deleteOrigenDestino(item.id).subscribe({
+    next: () => {
+      this.modalContenido.datos = this.modalContenido.datos.filter((dato: any) => dato.id !== item.id);
+    },
+    error: (err) => console.error('Error al eliminar Origen/Destino:', err)
+  });
 }
+
 
   }
 

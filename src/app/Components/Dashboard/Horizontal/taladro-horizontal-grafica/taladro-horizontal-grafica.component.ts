@@ -29,6 +29,7 @@ import * as XLSX from 'xlsx-js-style';
 import { ExcelHorizontalExportService } from '../../../../services/export/general/ExcelHorizontalExportService.service';
 import { ExcelHorizontalExportServiceFiltro } from '../../../../services/export/filtro/ExcelHorizontalExportService.service';
 import { ToastrService } from 'ngx-toastr';
+import { ExcelImportHorizontalService } from '../../../../services/import/excel-import-horizontal.service';
 
 @Component({
   selector: 'app-taladro-horizontal-grafica',
@@ -82,7 +83,7 @@ fechaHasta: string = '';
 turnoSeleccionado: string = '';
 turnos: string[] = ['DÍA', 'NOCHE'];
 
-  constructor(private _toastr: ToastrService, private metaService: MetaService, private operacionService: OperacionService,private excelHorizontalExportService: ExcelHorizontalExportService, private excelHorizontalExportServicefiltro: ExcelHorizontalExportServiceFiltro) {}
+  constructor(private _toastr: ToastrService, private metaService: MetaService, private operacionService: OperacionService,private excelHorizontalExportService: ExcelHorizontalExportService, private excelHorizontalExportServicefiltro: ExcelHorizontalExportServiceFiltro,  private excelImport: ExcelImportHorizontalService) {}
 
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -294,7 +295,7 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
         this.prepararDatosGraficoEstados();
         this.prepararDatoRendimientoPerforacion();
 
-        this._toastr.success('Datos cargados correctamente', 'Éxito');
+        this._toastr.success('Datos cargados correctamente horizontal', 'Éxito');
 
       },
       error: (err) => {
@@ -997,6 +998,28 @@ exportToExcelHorizontalfiltro() {
     this.datosOperaciones,
     'Reporte_Operaciones'
   );
+}
+
+onFileSelected(event: any) {
+  const file: File = event.target.files[0];
+  if (!file) return;
+
+  this.excelImport.importOperacionesFromExcel(file).then(operaciones => {
+    // console.log('Operaciones importadas:', operaciones);
+
+    // 🔹 Enviar el JSON directamente al POST
+    this.operacionService.postOperacionesHorizontal(operaciones).subscribe({
+      next: response => {
+        console.log('Operaciones enviadas correctamente:', response);
+        this._toastr.success('Operaciones enviadas a la API correctamente.', 'Éxito');
+      },
+      error: err => {
+        console.error('Error al enviar operaciones:', err);
+        this._toastr.error('Ocurrió un error al enviar operaciones.', 'Error');
+      }
+    });
+
+  });
 }
 
 }

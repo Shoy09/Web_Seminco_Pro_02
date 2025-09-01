@@ -66,6 +66,7 @@ export interface NubeEstado {
   perforaciones_taladro_largo?: NubePerforacionTaladroLargo[];
   perforaciones_horizontal?: NubePerforacionHorizontal[];
   sostenimientos?: NubeSostenimiento[];
+  carguios?: NubeCarguio[]; 
 }
 
 // Perforación Taladro Largo
@@ -189,4 +190,21 @@ export interface NubeInterSostenimiento {
   
   // Relación
   sostenimiento?: NubeSostenimiento;
+}
+
+// Carguio
+export interface NubeCarguio {
+  id: number;
+  estado_id: number;
+  tipo_labor?: string;          
+  labor?: string;               
+  tipo_labor_manual?: string;   
+  labor_manual?: string;        
+  ncucharas?: number;           
+  observacion?: string;         
+  createdAt?: string;
+  updatedAt?: string;
+
+  // Relación
+  estado?: NubeEstado;
 }

@@ -24,6 +24,8 @@
 <button (click)="exportToExcelHorizontal()" class="btn btn-success">
   <i class="fas fa-file-excel"></i> Exportar a Excel completo
 </button>
+<input type="file" #fileInput style="display: none" (change)="onFileSelected($event)" />
+<button (click)="fileInput.click()">Import Excel</button>
   </div>
 
   <!-- Tarjetas con los gráficos -->

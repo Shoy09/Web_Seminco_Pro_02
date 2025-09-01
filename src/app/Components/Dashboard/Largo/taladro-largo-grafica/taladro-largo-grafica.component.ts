@@ -24,6 +24,7 @@ import * as XLSX from 'xlsx-js-style';
 import { ExcelExportService } from '../../../../services/export/general/ExcelExportService.service';
 import { ExcelExportServiceLargoFiltro } from '../../../../services/export/filtro/ExcelExportService.service';
 import { ToastrService } from 'ngx-toastr';
+import { ExcelImportService } from '../../../../services/import/excel-import.service';
 
  
 @Component({
@@ -65,7 +66,7 @@ private todasLasMetas: Meta[] = [];
   };
 
  
-  constructor(private _toastr: ToastrService, private metaService: MetaLargoService, private operacionService: OperacionService, private excelExportService: ExcelExportService, private excelExportServiceFiltro: ExcelExportServiceLargoFiltro) {}
+  constructor(private _toastr: ToastrService, private metaService: MetaLargoService, private operacionService: OperacionService, private excelExportService: ExcelExportService, private excelExportServiceFiltro: ExcelExportServiceLargoFiltro, private excelImport: ExcelImportService) {}
  
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -266,7 +267,7 @@ private obtenerCantidadDias(fechaInicio: string, fechaFin: string): number {
         this.prepararDatosHorometros();
         this.prepararDatosGraficoEstados();
         this.prepararDatoRendimientoPerforacion();
-        this._toastr.success('Datos cargados correctamente', 'Éxito');
+        this._toastr.success('Datos cargados correctamente Largo', 'Éxito');
       },
       error: (err) => {
         console.error('❌ Error al obtener datos:', err);
@@ -829,5 +830,28 @@ exportToExcelFiltro() {
     'Reporte_Operaciones_Largo'
   );
 }
+
+onFileSelected(event: any) {
+  const file: File = event.target.files[0];
+  if (!file) return;
+
+  this.excelImport.importOperacionesFromExcel(file).then(operaciones => {
+    // console.log('Operaciones importadas:', operaciones);
+
+    // 🔹 Enviar el JSON directamente al POST
+    this.operacionService.postOperacionesLargo(operaciones).subscribe({
+      next: response => {
+        console.log('Operaciones enviadas correctamente:', response);
+        this._toastr.success('Operaciones enviadas a la API correctamente.', 'Éxito');
+      },
+      error: err => {
+        console.error('Error al enviar operaciones:', err);
+        this._toastr.error('Ocurrió un error al enviar operaciones.', 'Error');
+      }
+    });
+
+  });
+}
+
 
 }

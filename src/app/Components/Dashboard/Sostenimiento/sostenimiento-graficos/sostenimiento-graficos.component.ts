@@ -26,6 +26,7 @@ import * as XLSX from 'xlsx-js-style';
 import { ExcelSostenimientoExportService } from '../../../../services/export/general/ExcelSostenimientoExportService.service';
 import { ExcelSostenimientoExportServiceFiltro } from '../../../../services/export/filtro/ExcelSostenimientoExportService.service';
 import { ToastrService } from 'ngx-toastr';
+import { ExcelSostenimientoImportService } from '../../../../services/import/excel-import-sostenimiento.service';
 
 @Component({
   selector: 'app-sostenimiento-graficos',
@@ -70,7 +71,7 @@ private todasLasMetas: Meta[] = [];
   };
 
 
-  constructor(private _toastr: ToastrService, private metaService: MetaSostenimientoService, private operacionService: OperacionService, private excelSostenimientoExportService: ExcelSostenimientoExportService, private excelSostenimientoExportServiceFiltro: ExcelSostenimientoExportServiceFiltro) {}
+  constructor(private _toastr: ToastrService, private metaService: MetaSostenimientoService, private operacionService: OperacionService, private excelSostenimientoExportService: ExcelSostenimientoExportService, private excelSostenimientoExportServiceFiltro: ExcelSostenimientoExportServiceFiltro,   private excelImport: ExcelSostenimientoImportService) {}
 
   ngOnInit(): void {
     const fechaISO = this.obtenerFechaLocalISO();
@@ -274,7 +275,7 @@ private obtenerMesDeFecha(fecha: string): string {
         this.prepararDatosMalla();
         this.prepararDatosNtaladro();
         this.prepararDatoRendimientoPerforacion();
-        this._toastr.success('Datos cargados correctamente', 'Éxito');
+        this._toastr.success('Datos cargados correctamente Sostenimiento', 'Éxito');
       },
       error: (err) => {
         console.error('❌ Error al obtener datos:', err);
@@ -955,5 +956,28 @@ exportToExcelSostenimientoFiltro() {
     'Reporte_Operaciones'
   );
 }
+
+onFileSelected(event: any) {
+  const file: File = event.target.files[0];
+  if (!file) return;
+
+  this.excelImport.importOperacionesFromExcel(file).then(operaciones => {
+    // console.log('Operaciones importadas:', operaciones);
+
+    // 🔹 Enviar el JSON directamente al POST
+    this.operacionService.postOperacionesSostenimiento(operaciones).subscribe({
+      next: response => {
+        console.log('Operaciones enviadas correctamente Sos:', response);
+        this._toastr.success('Operaciones Sos enviadas a la API correctamente.', 'Éxito');
+      },
+      error: err => {
+        console.error('Error al enviar operaciones:', err);
+        this._toastr.error('Ocurrió un error al enviar operaciones.', 'Error');
+      }
+    });
+
+  });
+}
+
 
 }

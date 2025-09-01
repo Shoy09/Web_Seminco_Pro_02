@@ -24,6 +24,7 @@ rolUsuario: string | null = null;
         { title: 'Perforación Horizontal', path: 'taladro-horizontal-grafico' },
         { title: 'Sostenimiento', path: 'sostenimiento' },
         { title: 'Explosivos', path: 'explosivos-graficos' },
+        { title: 'Carguio', path: 'carguio' },
         { title: 'Reporte Indicadores', path: 'power-bi' },
       ],
     },

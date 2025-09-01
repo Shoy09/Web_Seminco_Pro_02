@@ -10,7 +10,8 @@ export class OperacionService {
   private readonly endpoints = {
     largo: 'operacion/largo',
     horizontal: 'operacion/horizontal',
-    sostenimiento: 'operacion/sostenimiento'
+    sostenimiento: 'operacion/sostenimiento',
+    carguio: 'operacion/carguio'
   };
 
   constructor(private apiService: ApiService) {}
@@ -20,16 +21,33 @@ export class OperacionService {
     return this.apiService.getDatos(this.endpoints.largo);
   }
 
+  postOperacionesLargo(data: any): Observable<any> {
+  return this.apiService.postDatos(this.endpoints.largo, data);
+}
 
   // **Operaciones Horizontales**
   getOperacionesHorizontal(): Observable<any> {
     return this.apiService.getDatos(this.endpoints.horizontal);
   }
 
+postOperacionesHorizontal(data: any): Observable<any> {
+  return this.apiService.postDatos(this.endpoints.horizontal, data);
+}
 
   // **Operaciones de Sostenimiento**
   getOperacionesSostenimiento(): Observable<any> {
     return this.apiService.getDatos(this.endpoints.sostenimiento);
   }
 
+postOperacionesSostenimiento(data: any): Observable<any> {
+  return this.apiService.postDatos(this.endpoints.sostenimiento, data);
+}
+
+  getOperacionesCargui(): Observable<any> {
+    return this.apiService.getDatos(this.endpoints.carguio);
+  }
+
+  postOperacionesCargui(data: any): Observable<any> {
+  return this.apiService.postDatos(this.endpoints.carguio, data);
+}
 }
