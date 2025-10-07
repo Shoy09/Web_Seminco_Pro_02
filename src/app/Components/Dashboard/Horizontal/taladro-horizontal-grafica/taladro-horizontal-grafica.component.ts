@@ -1005,21 +1005,29 @@ onFileSelected(event: any) {
   if (!file) return;
 
   this.excelImport.importOperacionesFromExcel(file).then(operaciones => {
-    // console.log('Operaciones importadas:', operaciones);
+    console.log('Operaciones importadas:', operaciones);
 
-    // 🔹 Enviar el JSON directamente al POST
-    this.operacionService.postOperacionesHorizontal(operaciones).subscribe({
-      next: response => {
-        console.log('Operaciones enviadas correctamente:', response);
-        this._toastr.success('Operaciones enviadas a la API correctamente.', 'Éxito');
-      },
-      error: err => {
-        console.error('Error al enviar operaciones:', err);
-        this._toastr.error('Ocurrió un error al enviar operaciones.', 'Error');
-      }
-    });
+    // 🔹 Convertir a JSON en formato legible
+    const jsonData = JSON.stringify(operaciones, null, 2);
 
+    // 🔹 Crear un Blob con el JSON
+    const blob = new Blob([jsonData], { type: 'application/json' });
+
+    // 🔹 Crear URL temporal para descargar
+    const url = window.URL.createObjectURL(blob);
+
+    // 🔹 Crear link invisible para descargar
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'operaciones.json'; // Nombre del archivo descargado
+    a.click();
+
+    // 🔹 Liberar memoria
+    window.URL.revokeObjectURL(url);
+
+    this._toastr.success('Archivo JSON generado y descargado.', 'Éxito');
   });
 }
+
 
 }

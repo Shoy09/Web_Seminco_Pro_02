@@ -20,6 +20,7 @@ import { ListPdfComponent } from './Components/pdf/list-pdf/list-pdf.component';
 import { SemanaListComponent } from './Components/prueba/semana-list/semana-list.component';
 import { PowerBiPublicComponent } from './Components/Dashboard/Pu-PowerBi/power-bi-public/power-bi-public.component';
 import { CarguioGraficaComponent } from './Components/Dashboard/Carguio/carguio-grafica/carguio-grafica.component';
+import { AcerosGraficosComponent } from './Components/Dashboard/Aceros/aceros-graficos/aceros-graficos.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -48,7 +49,7 @@ export const routes: Routes = [
       { path: 'semana-personali', component: SemanaListComponent },
       { path: 'pdf', component: ListPdfComponent },
       { path: 'carguio', component: CarguioGraficaComponent },
-    
+      { path: 'acero-stock', component: AcerosGraficosComponent },
     ],
   },
 

@@ -1,0 +1,125 @@
+<div class="dashboard-container">
+  <!-- Filtros superiores -->
+  <div class="filtros-container">
+    <label>
+      Desde:
+      <input type="date" [(ngModel)]="fechaDesde" />
+    </label>
+    <label>
+      Hasta:
+      <input type="date" [(ngModel)]="fechaHasta" />
+    </label>
+    <label>
+      Turno:
+      <select [(ngModel)]="turnoSeleccionado">
+        <option value="">Todos</option>
+        <option *ngFor="let turno of turnos" [value]="turno">
+          {{ turno }}
+        </option>
+      </select>
+    </label>
+    <button (click)="aplicarFiltros()">Filtrar</button>
+    <button (click)="quitarFiltros()">Quitar filtros</button>
+    <button (click)="exportarAExcelExplosivos()" class="btn btn-success">
+  <i class="fas fa-file-excel"></i> Exportar a Excel completo
+</button>
+<button (click)="exportarAExcelExplosivosfiltro()" class="btn btn-success">
+  <i class="fas fa-file-excel"></i> Exportar a Excel filtrados
+</button>
+  </div>
+
+  <!-- Cards de diferencias -->
+  <div class="diferencias-container">
+    <div *ngFor="let diff of diferencias" class="card-diferencia">
+      <!-- Encabezado de la card -->
+      <div class="card-header" (click)="toggleDesglose(diff)">
+        <div class="header-info">
+          <span class="fecha-mes">{{ obtenerFechaActualFormateada() }} {{ obtenerMesActual() }}</span>
+          <span class="proceso">{{ diff.proceso }}</span>
+          <span class="tipo-acero">{{ diff.tipo_acero }}</span>
+          <span class="descripcion">{{ diff.descripcion }}</span>
+          <span class="cantidad" [class.positivo]="diff.diferencia > 0" 
+                              [class.negativo]="diff.diferencia < 0"
+                              [class.cero]="diff.diferencia === 0">
+            {{ diff.diferencia }}
+          </span>
+        </div>
+        <div class="header-icon">
+          <i class="fas" 
+             [class.fa-chevron-down]="!diff.desglosado" 
+             [class.fa-chevron-up]="diff.desglosado"></i>
+        </div>
+      </div>
+
+      <!-- Desglose (se muestra cuando está expandido) -->
+      <div *ngIf="diff.desglosado" class="card-desglose">
+        
+        <!-- Sección de Ingresos -->
+        <div class="seccion-ingresos">
+          <h4 class="titulo-seccion ingreso">INGRESOS (Total: {{ diff.cantidadIngresos }})</h4>
+          <div class="grid-container">
+            <div *ngFor="let ingreso of diff.ingresos" class="grid-item ingreso">
+              <div class="grid-content">
+                <div class="grid-field">
+                  <span class="field-label">Fecha:</span>
+                  <span class="field-value">{{ ingreso.fecha }}</span>
+                </div>
+                <div class="grid-field">
+                  <span class="field-label">Turno:</span>
+                  <span class="field-value">{{ ingreso.turno }}</span>
+                </div>
+                <div class="grid-field cantidad">
+                  <span class="field-label">Cantidad:</span>
+                  <span class="field-value">+{{ ingreso.cantidad }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="diff.ingresos.length === 0" class="sin-datos">
+            No hay ingresos registrados
+          </div>
+        </div>
+
+        <!-- Sección de Salidas -->
+        <div class="seccion-salidas">
+          <h4 class="titulo-seccion salida">SALIDAS (Total: {{ diff.cantidadSalidas }})</h4>
+          <div class="grid-container">
+            <div *ngFor="let salida of diff.salidas" class="grid-item salida">
+              <div class="grid-content">
+                <div class="grid-field">
+                  <span class="field-label">Fecha:</span>
+                  <span class="field-value">{{ salida.fecha }}</span>
+                </div>
+                <div class="grid-field">
+                  <span class="field-label">Turno:</span>
+                  <span class="field-value">{{ salida.turno }}</span>
+                </div>
+                <div class="grid-field">
+                  <span class="field-label">Equipo:</span>
+                  <span class="field-value">{{ salida.equipo }}</span>
+                </div>
+                <div class="grid-field">
+                  <span class="field-label">Operador:</span>
+                  <span class="field-value">{{ salida.operador }}</span>
+                </div>
+                <div class="grid-field cantidad">
+                  <span class="field-label">Cantidad:</span>
+                  <span class="field-value">-{{ salida.cantidad }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="diff.salidas.length === 0" class="sin-datos">
+            No hay salidas registradas
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay datos -->
+    <div *ngIf="diferencias.length === 0" class="sin-diferencias">
+      No hay datos para mostrar con los filtros aplicados
+    </div>
+  </div>
+</div>

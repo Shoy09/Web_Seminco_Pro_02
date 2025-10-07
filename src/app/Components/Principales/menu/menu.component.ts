@@ -26,6 +26,7 @@ rolUsuario: string | null = null;
         { title: 'Explosivos', path: 'explosivos-graficos' },
         { title: 'Carguio', path: 'carguio' },
         { title: 'Reporte Indicadores', path: 'power-bi' },
+        { title: 'Aceros', path: 'acero-stock' },
       ],
     },
     {
